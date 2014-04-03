@@ -1,0 +1,142 @@
+\documentclass{article}
+\usepackage{latexsym}
+\usepackage{amssymb,amsmath}
+\usepackage{custom2}
+\usepackage{graphicx} % for figures
+\usepackage{epstopdf} % so can use EPS or PDF figures
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{amssymb,amsfonts}
+\usepackage[all,arc]{xy}
+\usepackage{enumerate}
+\usepackage{mathrsfs}
+\usepackage{booktabs}
+\usepackage[pdftex]{hyperref}
+\usepackage{lscape}
+\usepackage{xcolor}
+\usepackage{natbib}
+
+\captionsetup{justification=RaggedRight, singlelinecheck=false}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\newcommand{\argmax}{\text{argmax}}
+\newcommand{\Tr}{\text{Tr}}
+%\newtheorem{claim}{Claim}
+\newtheorem{ass}{Assumption}
+
+\addtolength{\evensidemargin}{-.5in}
+\addtolength{\oddsidemargin}{-.5in}
+\addtolength{\textwidth}{1.4in}
+\addtolength{\textheight}{1.4in}
+\addtolength{\topmargin}{-.5in}
+
+\pagestyle{empty}
+
+\begin{document}
+\begin{center}
+\Large
+
+\end{center}
+
+
+\vspace{0pt}
+
+\begin{center}
+{\bf \LARGE{Stochastic Learning Dynamics with Two Applications}}
+\end{center}
+
+\tableofcontents
+
+\section{Abstract}
+Learning usually occurs in noisy environments.  In order to make a decision, one must accumulate the  evidence for different alternatives and choose one only once the uncertainty about the choice is sufficiently reduced.  There are two equivalent mathematical formulations of the optimal decision making algorithm: a sequential probability ratio test in which the likelihoods of two hypotheses are evaluated as more data points are collected and a drift-diffusion stochastic differential equation in which the belief about two hypotheses does a random walk until a threshold is reached.  In the random walk formulation, the threshold dictating when a decision has been made affects both the accuracy of the decision and the expected time until a decision is reached.  If the utility of a decision depends on accuracy and decision time, the threshold can be optimized accordingly.  There are two biological systems in which the variables used to make a decision can be described by a random walk: the firing rates of neural populations in the brain of an individual making a decision about a visual stimulus and the beliefs of monkeys about their relative dominance based on the fights they have engaged in.  The stochastic differential equations used to model these quite different systems are nearly identical, which suggests that there are universal principles underlying learning through noisy dynamical systems in biology.  However, there are (at least) three significant differences between the two models.  First, in the social system, there is a strategic component to the system since the optimal threshold of one animal depends on the threshold of the other animal, whereas in the neural system both neural populations are part of the cognitive system of the same individual trying to optimize its decision making.  Relatedly, the output of the decision has additional strategic consequences in the social system.  Second, whereas in the neural system, the differential equations are often reduced to a one-dimensional model, the social system is inherently two-dimensional.  Finally, in the social system, a monkey is not only trying to make a decision about his dominance with respect to one other monkey, but he is additionally trying to make decisions about many other partners at once, whereas in the neural case there is only one decision to be made at a time.  As a consequence of these differences... In comparing the output of the model of the social system to data, we found that ...
+
+\section{Introduction}
+
+\section{Observations }
+
+\subsection{Neural }
+Stochastic differential equations have been used to model, explain, and predict learning and decision making in both monkeys and humans. \citep{Eckhoff:2008uq, Brown:2005fk,Feng:2009kl,Bogacz:2006uq}
+
+
+\subsection{Social }
+
+\subsection{Extent and Limits of Analogy }
+
+
+\begin{table}\centering
+\caption{\label{analogy}{\bf  Analogy between neural and social systems.} }
+\ra{1.3}
+\begin{tabular}{@{}rllll@{}}
+&Neural &  \phantom{abc}& Social \\
+\cmidrule{2-2} \cmidrule{4-4} 
+variables &  firing rates of neural populations && opinions about relative dominance
+\\ input & dots moving left or right && fights won or lost
+\\ 
+\end{tabular}
+\end{table}
+
+\section{Derivation of Model}
+With two assumptions about the timescales on which probabilistic events occur, a simple mechanistic description of the integration of information about random events can be turned into a stochastic differential equation \cite{Gillespie:2000fk}.  A drift diffusion model is equivalent to a sequential probability ratio test, a learning algorithm that is optimal with respect to its accuracy and the time required to make a decision \cite{Moehlis:2004fk,Bogacz:2006uq}.  
+
+\begin{equation}
+\begin{array}{ll}
+dX_1&=\bigg(-\ell X_1(t)+b_\text{f}(2a-1)\bigg)dt+b_f\sqrt{a}dW_{\text{f},1}t-b_{\text{f}}\sqrt{(1-a)}dW_{\text{f},2}t
+\\dX_2&=\bigg(-\ell X_1(t)+b_\text{f}(1-2a)\bigg)dt-b_f\sqrt{a}dW_{\text{f},1}t+b_{\text{f}}\sqrt{(1-a)}dW_{\text{f},2}t,
+\end{array}
+\end{equation}
+
+\begin{table}\centering
+\caption{\label{models}{\bf  Comparison of models applied to neural and social systems.} }
+\ra{1.3}
+\begin{tabular}{@{}rllll@{}}
+& \multicolumn{2}{c}{Neural} & \phantom{abc}& Social \\
+\cmidrule{2-3} \cmidrule{5-5} 
+model  & DDM or OU & race && race with leak
+\\dimensionality & $1$ & $2$ && $2$
+\\decision & difference hits a threshold & one var. hits a threshold && one var. hits a threshold
+\\ criterion &  reward from being ``right" &&& reward from being ``right"
+\\ & reward rate &&& reward rate
+\\ & Bayes risk &&& Bayes risk
+\\ & &&& \fcolorbox{red}{white}{reward from  receiving signal}
+\\depends on & input strength &&& input strength
+\\ & noise &&& noise
+\\ & leak rate &&& leak rate
+\\ & &&& \fcolorbox{red}{white}{other animal's threshold}
+\\threshold  algorithm & error correction
+\\  & hill climbing
+\end{tabular}
+\end{table}
+
+\section{Results}
+
+\subsection{Two-Dimensional Decision Making }
+In the neural system, the two stochastic equations describing the activity of the two neural populations integrating environmental evidence are often reduced to a one-dimensional equation describing the difference in the activity levels to make the system easier to analyze \cite{Brown:2005fk,Bogacz:2006uq,Feng:2009kl}.  However, in the social system we are considering, we cannot make any assumptions about the existence of a third party evaluating the difference in the opinions of the two animals.  A ``decision," i.e. the emission of a signal from one of the two animals, is only reached when one of the two animals' opinions goes below a given threshold.  The social system is therefore inherently two-dimensional, whereas the neural system may be adequately described by one dimension. 
+
+We can compare the decision making process in the full two-dimensional system and in a reduced one-dimensional system to see whether decisions are made more accurately or quickly in one or the other. We find that...
+
+\subsection{Strategic Decision Making }
+In the neural system, an individual wants to make both a decision that is both quick and accurate.  This is also true in the social system.  However, it may also be the case that a monkey wants to avoid emitting a subordination signal and wants to receive a signal, regardless of whether or not this is the ``correct" outcome, i.e. whether or not he is actually more likely to win a fight.  The criterion used to optimize the threshold, therefore, may be quite different in the two systems.  Additionally, the speed and outcome of the decision process depend on both animals' thresholds, so there is a game theoretic aspect to an animal's optimization in that his best behavior depends on the behavior of the other animal. Optimizing the threshold is thus strategic in the social system but not in the neural system.  
+
+When we optimize the threshold according to different criteria...
+
+When we allow the optimization to depend on the partner's threshold...
+
+
+\subsection{Social Decision Making }
+A monkey can try to decide whether it is more or less likely to win a fight than another monkey using information from the fights the pair has previously engaged in.  Further, he can try to make such a decision about every other member of its social group.  Since he is trying to use the same algorithm to learn about every other animal, he is constrained to have only one decision threshold for each of these decision processes.  The optimal decision threshold in this social context depends on the distribution of fighting abilities in the group and the decision thresholds of the other animals. 
+
+\subsection{Comparison to Social Data }
+Empirically, those pairs of monkeys that take the longest to establish a signaling dynamics are those with the most similar fighting abilities...
+
+\section{Discussion}
+
+
+
+
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{signaling_model}
+
+\end{document}
+
+
