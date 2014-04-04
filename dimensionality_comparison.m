@@ -1,3 +1,8 @@
+green=importdata('green.txt');
+blue=importdata('blue.txt');
+red=importdata('red.txt');
+black=importdata('black.txt');
+%%
 deltax1=0.01;
 deltax2=0.025 ;
 b=1;
@@ -49,26 +54,57 @@ markersz=5;
 markercol='white';
 rho=4.2/5.6;
 w=8.5;
-h=w*rho;
+h=w*ratio;
+figure
+set(gcf,'Color','w')
+v=get(gcf,'Position');
+ratio=v(4)/v(3);
+w=6.83*2;
+h=w/2;
+set(gcf,'Units','inches');
+set(gcf,'Position',[v(1) v(2) w h]);
 
-for k=Nl:-1:1
-    figure
-    set(gcf,'Color','w')
-    v=get(gcf,'Position');
-    ratio=v(4)/v(3);
-    w=6.83*2;
-    h=w*ratio;
+textlabels={'a' 'b'};
+increment=floor(size(blue,1)/Nd);
+
+p=[];
+
+for k=1:2
+    subplot_tight(1,4,(1:2)+2*(k-1),[.1 .07])
+    set(gca,'FontSize',labfontsz)
     hold on
-    for i=2:Nd
-    plot(reshape(twooutput(k,i,:,1),1,[]),reshape(twooutput(k,i,:,2),1,[]),'blue','LineWidth',lw)
-    plot(reshape(oneoutput(k,i,1:40,1),1,[]),reshape(oneoutput(k,i,1:40,2),1,[]),'red','LineWidth',lw)
+    switch k
+        case 2
+            for i=2:Nd
+            p(i)=plot(reshape(twooutput(k,i,:,2),1,[]),reshape(twooutput(k,i,:,1),1,[]),'Color',blue(i,:),'LineWidth',lw);
+            p(i+Nd)=plot(reshape(oneoutput(k,i,1:40,2),1,[]),reshape(oneoutput(k,i,1:40,1),1,[]),'Color',red(i,:),'LineWidth',lw)
+            end
+        otherwise 
+            for i=2:Nd
+            plot(reshape(twooutput(k,i,:,2),1,[]),reshape(twooutput(k,i,:,1),1,[]),'Color',blue(i,:),'LineWidth',lw);
+            plot(reshape(oneoutput(k,i,1:40,2),1,[]),reshape(oneoutput(k,i,1:40,1),1,[]),'Color',red(i,:),'LineWidth',lw)
+            end
     end
-    xlabel('Probability of correct output','FontSize',textfontsz)
-    ylabel('Expected time to output','FontSize',textfontsz)
-%     leg=legend('Two dimensions','One dimension');
-%     set(leg,'Position',[.6 .8 .1 .05])
+    ylabel('Probability of correct output','FontSize',textfontsz)
+    xlabel('Expected time to output','FontSize',textfontsz)
+text(-.4, 1.03,textlabels(k),'HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
 end
 
+leg=legend([p(Nd) p(Nd+Nd) p(Nd+(Nd:-1:2))],'Two dimensions','One dimension',['d=' num2str(domvals(Nd))],['d=' num2str(domvals(Nd-1))],['d=' num2str(domvals(Nd-2))],['d=' num2str(domvals(Nd-3))],['d=' num2str(domvals(Nd-4))]);
+legend boxoff
+leg_line=findobj(leg,'type','Line')
+for i = 1:5
+     set(leg_line(2*i), 'Color', black(i+1,:));
+     set(leg_line(2*i-1),'Color',black(i+1,:));
+end
+
+set(leg,'Position',[.85 .75 .1 .1])
+    
+set(gcf,'PaperSize',[w h]);
+set(gcf,'PaperPosition',[0 0 w h]);
+
+filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','1d_v_2d_symmetric','.pdf');
+print(filename,'-dpdf','-r300');
 %%
 axislw=1.25;
 lw=3;
@@ -175,7 +211,7 @@ end
 
 symm=diag(twomat(:,:,1));
 [L,~]=contour(threshvals2,threshvals2,transpose(twomat(:,:,1)),.5:.05:1,'LineWidth',3);
-L=dividecontours(L);
+L=dividecontours(L); 
 numlines=length(L);
 
 M=cell(1,numlines);
