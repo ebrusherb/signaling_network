@@ -42,18 +42,18 @@ for i=1:Nc
             end
             pp1=interp1(threshvals,reshape(threshvals(T1_best(i,j,k,:)),1,[]),'linear','pp');
             pp2=interp1(threshvals,reshape(threshvals(T2_best(i,j,k,:)),1,[]),'linear','pp');
-            v1=ppval(pp1,threshvals);
-            v2=ppval(pp2,v1);
-            x=threshvals(abs(threshvals-v2)<0.01);
-            y=ppval(pp1,x);
-            nasheq_thresh{i,j,k}=[x;y];
+            v1=ppval(pp2,threshvals);
+            v2=ppval(pp1,v1);
+            T1=threshvals(abs(threshvals-v2)<0.01);
+            T2=ppval(pp2,T1);
+            nasheq_thresh{i,j,k}=[T1;T2];
             pp1=interp1(indices,reshape(T1_best(i,j,k,:),1,[]),'linear','pp');
             pp2=interp1(indices,reshape(T2_best(i,j,k,:),1,[]),'linear','pp');
-            v1=ppval(pp1,indices);
-            v2=ppval(pp2,v1);
-            x=indices(abs((indices)-v2)<0.01);
-            y=ppval(pp1,x);
-            nasheq_ind{i,j,k}=[x;y];
+            v1=ppval(pp2,indices);
+            v2=ppval(pp1,v1);
+            T1=indices(abs((indices)-v2)<0.01);
+            T2=ppval(pp2,T1);
+            nasheq_ind{i,j,k}=[T1;T2];
         end
     end
 end
@@ -76,9 +76,9 @@ for i=1:Nl
         hold on
         L=size(nasheq_thresh{2,i,j},2);
         d=domvals(j);
-        num=plot(d*ones(1,L),nasheq_thresh{2,i,j}(1,:),'Marker','o','Color','blue','LineWidth',lw,'MarkerSize',markersz+5);
+        num=plot(d*ones(1,L),nasheq_thresh{2,i,j}(1,:),'LineStyle','o','Color','blue','LineWidth',lw,'MarkerSize',markersz+5);
         p(2*i)=num(1);
-        num=plot(d*ones(1,L),nasheq_thresh{2,i,j}(2,:),'Marker','o','Color','red','LineWidth',lw,'MarkerSize',markersz);
+        num=plot(d*ones(1,L),nasheq_thresh{2,i,j}(2,:),'LineStyle','o','Color','red','LineWidth',lw,'MarkerSize',markersz);
         p(2*i-1)=num(1);
     end
     set(gca,'YLim',[0 max(threshvals)]);
@@ -89,8 +89,8 @@ for i=1:Nl
     d=domvals(1);
     N=nasheq_ind{2,i,1};
     [hax hline1 hline2]=plotyy(d*ones(1,L),twomat(i,1,N(1,1),N(2,1),1),d*ones(1,L),twomat(i,1,N(1,1),N(2,1),2));
-    set(hline1,'Marker','o','Color','red','LineWidth',lw,'MarkerSize',markersz);
-    set(hline2,'Marker','o','Color','blue','LineWidth',lw,'MarkerSize',markersz);
+    set(hline1,'LineStyle','o','Color','red','LineWidth',lw,'MarkerSize',markersz);
+    set(hline2,'LineStyle','o','Color','blue','LineWidth',lw,'MarkerSize',markersz);
 
     axes(hax(1)); hold on
     for j=1:Nd
@@ -98,7 +98,7 @@ for i=1:Nl
         L=size(N,2);
         d=domvals(j);
         for k=1:L
-            plot(d*ones(1,L),twomat(i,j,N(1,k),N(2,k),1),'Marker','o','Color','red','MarkerSize',markersz,'LineWidth',lw)
+            plot(d*ones(1,L),twomat(i,j,N(1,k),N(2,k),1),'LineStyle','o','Color','red','MarkerSize',markersz,'LineWidth',lw)
         end
     end
 
@@ -108,12 +108,12 @@ for i=1:Nl
         L=size(N,2);
         d=domvals(j);
         for k=1:L
-            plot(d*ones(1,L),twomat(i,j,N(1,k),N(2,k),2),'Marker','o','Color','blue','MarkerSize',markersz,'LineWidth',lw)
+            plot(d*ones(1,L),twomat(i,j,N(1,k),N(2,k),2),'LineStyle','o','Color','blue','MarkerSize',markersz,'LineWidth',lw)
         end
     end
     
     set(hax(1),'xlim',[.5 1],'ylim',[0 1],'ytick',0:.1:1)
-    set(hax(2),'xlim',[.5 1],'ylim',[0 5],'ytick',0:1:5)
+    set(hax(2),'xlim',[.5 1],'ylim',[0 10],'ytick',0:1:10)
     set(hax,{'ycolor'},{'r';'b'})
 end
 end
