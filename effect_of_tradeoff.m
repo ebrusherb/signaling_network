@@ -1,6 +1,5 @@
 function effect_of_tradeoff(c1,c2,c3)
 
-Nc=evalin('base','Nc');
 Nl=evalin('base','Nl');
 Nd=evalin('base','Nd');
 Nt=evalin('base','Nt');
@@ -13,7 +12,7 @@ red=evalin('base','red');
 markersz=evalin('base','markersz');
 lw=evalin('base','lw');
 
-perf=zeros(Nc,2,Nl,Nd,Nt,Nt); %criteria, individual, leak, dominance, thresholds
+perf=zeros(2,2,Nl,Nd,Nt,Nt); %criteria, individual, leak, dominance, thresholds
 
 perf(1,1,:,2:Nd,:,:)=c1*(1-twomat(:,2:Nd,:,:,1))+c2*(twomat(:,2:Nd,:,:,2));
 perf(1,2,:,2:Nd,:,:)=c1*(1-twomat(:,2:Nd,:,:,1))+c2*(twomat(:,2:Nd,:,:,2));
@@ -25,13 +24,13 @@ perf(1,2,:,1,:,:)=c2*(twomat(:,1,:,:,2));
 perf(2,1,:,1,:,:)=c2*(twomat(:,1,:,:,2))+c3*(1-twomat(:,1,:,:,1));
 perf(2,2,:,1,:,:)=c2*(twomat(:,1,:,:,2))+c3*(twomat(:,1,:,:,1));
 
-nasheq_thresh=cell(Nc,Nl,Nd);
-nasheq_ind=cell(Nc,Nl,Nd);
+nasheq_thresh=cell(2,Nl,Nd);
+nasheq_ind=cell(2,Nl,Nd);
 
-T1_best=zeros(Nc,Nl,Nd,Nt); %criteria, leak, dominance, threshold
-T2_best=zeros(Nc,Nl,Nd,Nt);
+T1_best=zeros(2,Nl,Nd,Nt); %criteria, leak, dominance, threshold
+T2_best=zeros(2,Nl,Nd,Nt);
 
-for i=1:Nc
+for i=1:2
     for j=1:Nl
         for k=1:Nd
             for u=1:Nt

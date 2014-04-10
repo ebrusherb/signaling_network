@@ -66,7 +66,7 @@ Similar models have previously been applied to animal conflicts, although in tha
 In Table \ref{analogy}, we list the inputs, decision variables, and outputs of the two systems.  
 
 \section{Derivation of Model \label{derivation}}
-Stochastic differential equations have been phenomenologically applied to learning systems, with some success \citep{Eckhoff:2008uq, Brown:2005fk,Feng:2009kl,Bogacz:2006uq}.  However, with two assumptions about the timescales on which probabilistic events occur, a simple mechanistic description of the accumulation of information about random events can be turned into a stochastic differential equation \cite{Gillespie:2000fk}.  
+Stochastic differential equations have been phenomenologically applied to learning systems, with some success \citep{Eckhoff:2008uq, Brown:2005fk,Feng:2009kl,Bogacz:2006uq}.  However, with two assumptions about the timescales on which probabilistic events occur, a simple mechanistic description of the accumulation of information about random events can be turned into a stochastic differential equation \cite{Gillespie:2000fk}.  These assumptions are particularly reasonable in the social system.
 
 \begin{equation}
 \begin{array}{ll}
@@ -86,7 +86,11 @@ The outcome of the decision process is not deterministic. Because of the noise i
 \subsection{Two-Dimensional Decision Making }
 In the neural system, the two stochastic equations describing the activity of the two neural populations integrating environmental evidence are often reduced to a one-dimensional equation describing the difference in the activity levels to make the system easier to analyze \cite{Brown:2005fk,Bogacz:2006uq,Feng:2009kl}.  However, in the social system we are considering, we cannot make any assumptions about the existence of a third party evaluating the difference in the opinions of the two animals.  A ``decision," i.e. the emission of a signal from one of the two animals, is only reached when one of the two animals' opinions goes below a certain threshold.  The social system is therefore inherently two-dimensional, whereas the neural system may be adequately described by one dimension. 
 
-We can compare the decision making process in the full two-dimensional system and in a reduced one-dimensional system to see whether decisions are made more accurately or quickly in one or the other. We find that the two-dimensional decision is less accurate than the one-dimensional decision.  That is, for a given expected time to reach a decision, the two-dimensional decision will reach the correct decision with a lower probability (Figure \ref{1dv2d}).  The difference in probability is very low when memory is perfect (i.e. $\ell=0$).  However, at higher leak rates the difference becomes more pronounced.  Further, when the strength of the input ($d$) is lower, the difference becomes greater.  Thus, as the decision becomes harder because either memory decreases or the true state of the world becomes harder to detect, the advantage of the one-dimensional system increases.
+We can compare the decision making process in the full two-dimensional system and in a reduced one-dimensional system to see whether decisions are made more accurately or quickly in one or the other. In the neural system, there are two thresholds: if the difference in activity levels reaches the left threshold the subject decides the dots are moving left and analogously for the right threshold.  Similarly, in the social system there are two thresholds: each animal chooses a threshold below which he will emit the subordination signal. To make the systems directly comparable, we assume in both cases that the thresholds are symmetric.
+
+We find that the two-dimensional decision is less accurate than the one-dimensional decision.  That is, for a given expected time to reach a decision, the two-dimensional decision will reach the correct decision with a lower probability (Figure \ref{1dv2d}).  The difference in probability is very low when memory is perfect (i.e. $\ell=0$).  However, at higher leak rates the difference becomes more pronounced.  Further, when the strength of the input ($d$) is lower, the difference becomes greater.  Thus, as the decision becomes harder because either memory decreases or the true state of the world becomes harder to detect, the advantage of the one-dimensional system increases.
+
+Without any prior knowledge of the probabilities of the state of the visual stimulus, it is reasonable to assume that the thresholds for deciding for each direction are symmetric.  On the other hand, in the social system, the thresholds are chosen by two competing animals and there is less reason to assume that their thresholds are the same.  The accuracy in a given amount of time depends on the ratio of the two thresholds and is improved when the weaker animal's threshold is lower than the stronger animal's threshold (Figure \ref{2dthresh}).  
 
 \subsection{Strategic Decision Making }
 Differences in the threshold between animals could just be explained by individual variation.  However, there may be a strategic aspect to this variation in the social system.  In the neural system, an individual wants to make both a decision that is both quick and accurate.  This is also true in the social system.  However, it may also be the case that a monkey wants to avoid emitting a subordination signal and wants to receive a signal, regardless of whether or not this is the ``correct" outcome, i.e. whether or not he is actually more likely to win a fight.  The criterion used to optimize the threshold, therefore, may be quite different in the two systems.  Additionally, the speed and outcome of the decision process depend on both animals' thresholds.  Since an animal's best behavior depends on the behavior of the other animal, optimizing the threshold is strategic in the social system but not in the neural system.  
@@ -111,7 +115,7 @@ Empirically, those pairs of monkeys that take the longest to establish a signali
 
 \begin{figure}
 \includegraphics[width=\textwidth]{2d_flexible_thresholds.pdf}
-\caption{\label{2dthresh} When the two thresholds in the two-dimensional case are allowed to vary freely, the decision process can be arbitrarily accurate in a given amount of time, depending on how much lower the weaker animal's threshold is than the stronger animal's threshold.  The expected time to reach a decision is on the x-axis and the probability of reaching the correct decision in that amount of time is on the y-axis.}
+\caption{\label{2dthresh} When the two thresholds in the two-dimensional case are allowed to vary freely, the decision process can be arbitrarily accurate in a given amount of time, depending on how much lower the weaker animal's threshold is than the stronger animal's threshold.  The expected time to reach a decision is on the x-axis and the probability of reaching the correct decision in that amount of time is on the y-axis.  The curve depends on the ratio of the weaker animal's threshold to the stronger animal's threshold ($\rho$).  Lower ratios are represented in higher darker curves.}
 \end{figure}
 
 \begin{table}
@@ -131,23 +135,23 @@ input & dots moving left or right & fights won or lost
 \end{table}
 
 \begin{table}\centering
-\caption{\label{models}{\bf  Comparison of models applied to neural and social systems.} }
+\caption{\label{models}{\bf  Comparison of models applied to neural and social systems.} Differences are highlighted in red.}
 \ra{1.3}
 \begin{tabular}{@{}rllll@{}}
-& \multicolumn{2}{c}{Neural} & \phantom{abc}& Social \\
-\cmidrule{2-3} \cmidrule{5-5} 
+& \multicolumn{2}{c}{Neural} &  Social \\
+\cmidrule{2-3} \cmidrule{4-4} 
 %model  & DDM or OU & race && race with leak
 %\\
-dimensionality & $1$ & $2$ && $2$
-\\decision & difference hits a threshold & one var. hits a threshold && \fcolorbox{red}{white}{one var. hits a threshold}
-\\ optimality criterion &  reward from being ``right" &&& reward from being ``right"
-\\ & reward rate &&& reward rate
-\\ & Bayes risk &&& Bayes risk
-\\ & &&& \fcolorbox{red}{white}{reward from  receiving signal}
-\\optimization depends on & input strength &&& input strength
-\\ & noise &&& noise
-\\ & leak rate &&& leak rate
-\\ & &&& \fcolorbox{red}{white}{other animal's threshold}
+dimensionality & $1$  && $2$
+\\decision & difference hits a threshold  && \fcolorbox{red}{white}{one var. hits a threshold}
+\\ optimality criterion &  reward from being ``right" && reward from being ``right"
+\\ & reward rate && reward rate
+\\ & Bayes risk && Bayes risk
+\\ & && \fcolorbox{red}{white}{reward from  receiving signal}
+\\optimization depends on & input strength && input strength
+\\ & noise && noise
+\\ & leak rate && leak rate
+\\ & && \fcolorbox{red}{white}{other animal's threshold}
 \\threshold  algorithm & error correction
 \\  & hill climbing
 \end{tabular}
