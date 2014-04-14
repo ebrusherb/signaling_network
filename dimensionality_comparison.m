@@ -13,47 +13,6 @@ markersz=5;
 markercol='white';
 
 %%
-deltax1=0.01;
-deltax2=0.025 ;
-b=1;
-
-lvals=0:.5:2;
-Nl=length(lvals);
-
-domvals=.5:.1:1;
-Nd=length(domvals);
-
-threshvals1=.1:.1:8;
-Nt1=length(threshvals1);
-
-threshvals2=.5:.5:2;
-Nt2=length(threshvals2);
-
-%%
-
-oneoutput=zeros(Nl,Nd,Nt1,2);
-twooutput=zeros(Nl,Nd,Nt2,2);
-
-for k=1:Nl
-    l=lvals(k);
-    for i=1:Nd
-        d=domvals(i);
-        for j=1:Nt1
-            t=threshvals1(j);
-            [x,y,~]=solve_pde_1d(-t,d,t,deltax1,l,b);
-            oneoutput(k,i,j,:)=[x y];
-        end
-        for j=1:Nt2
-            t=threshvals2(j);
-            [x,y,~]=solve_pde_2d(-t,-t,d,5,5,deltax2,deltax2,l,b);
-            twooutput(k,i,j,:)=[x y];
-        end
-    end
-end
-%%
-filename=strcat('two_v_one_output','.mat');
-save(filename,'twooutput','oneoutput','domvals','lvals','threshvals1','threshvals2');
-%%
 
 figure
 set(gcf,'Color','w')
@@ -75,13 +34,13 @@ for k=1:2
     switch k
         case 2
             for i=2:Nd
-            p(i)=plot(reshape(twooutput(k,i,:,2),1,[]),reshape(twooutput(k,i,:,1),1,[]),'Color',blue(i,:),'LineWidth',lw);
-            p(i+Nd)=plot(reshape(oneoutput(k,i,1:40,2),1,[]),reshape(oneoutput(k,i,1:40,1),1,[]),'Color',red(i,:),'LineWidth',lw);
+            p(i)=plot(reshape(diag(reshape(twooutput(k,i,:,:,2),Nt,[])),1,[]),reshape(diag(reshape(twooutput(k,i,:,:,1),Nt,[])),1,[]),'Color',blue(i,:),'LineWidth',lw);
+            p(i+Nd)=plot(reshape(onemat(k,i,1:40,2),1,[]),reshape(onemat(k,i,1:40,1),1,[]),'Color',red(i,:),'LineWidth',lw);
             end
         otherwise 
             for i=2:Nd
-            plot(reshape(twooutput(k,i,:,2),1,[]),reshape(twooutput(k,i,:,1),1,[]),'Color',blue(i,:),'LineWidth',lw);
-            plot(reshape(oneoutput(k,i,1:40,2),1,[]),reshape(oneoutput(k,i,1:40,1),1,[]),'Color',red(i,:),'LineWidth',lw)
+            plot(reshape(diag(reshape(twooutput(k,i,:,:,2),Nt,[])),1,[]),reshape(diag(reshape(twooutput(k,i,:,:,1),Nt,[])),1,[]),'Color',blue(i,:),'LineWidth',lw);
+            plot(reshape(onemat(k,i,1:40,2),1,[]),reshape(onemat(k,i,1:40,1),1,[]),'Color',red(i,:),'LineWidth',lw)
             end
     end
     ylabel('Probability of correct output','FontSize',textfontsz)
@@ -103,16 +62,14 @@ set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[0 0 w h]);
 
 filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','1d_v_2d_symmetric','.pdf');
-print(filename,'-dpdf','-r300');
+% print(filename,'-dpdf','-r300');
 
 %%
 l=lvals(2);
 d=domvals(end-1);
 
-threshvals=.1:.1:2;
-Nt=length(threshvals);
 
-ratios=[.1 .5 1 2 10];
+ratios=[.1 .5];
 Nr=length(ratios);
 
 twoflexthresh=zeros(Nr,Nt,2);
@@ -120,10 +77,7 @@ twoflexthresh=zeros(Nr,Nt,2);
 for i=1:Nr
     r=ratios(i);
     for j=1:Nt
-        T1=threshvals(j);
-        T2=r*T1;
-        [x,y,~]=solve_pde_2d(-T1,-T2,d,5,5,deltax2,deltax2,l,b);
-        twoflexthresh(i,j,:)=[x y];
+        twoflexthresh(i,j,1)=interp2(threshvals,threshvals,reshape(twomat(1,end-1,:,:,1),Nt,[]),threshvals,r*threshvals);
     end
 end
 

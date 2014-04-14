@@ -68,6 +68,8 @@ In Table \ref{analogy}, we list the inputs, decision variables, and outputs of t
 \section{Derivation of Model \label{derivation}}
 Stochastic differential equations have been phenomenologically applied to learning systems, with some success \citep{Eckhoff:2008uq, Brown:2005fk,Feng:2009kl,Bogacz:2006uq}.  However, with two assumptions about the timescales on which probabilistic events occur, a simple mechanistic description of the accumulation of information about random events can be turned into a stochastic differential equation \cite{Gillespie:2000fk}.  These assumptions are particularly reasonable in the social system.
 
+%note about applicability to quorum sensing?!?
+
 \begin{equation}
 \begin{array}{ll}
 dX_1&=\bigg(-\ell X_1(t)+b(2d-1)\bigg)dt+b\sqrt{d}dW_{1}t-b\sqrt{(1-d)}dW_{2}t
@@ -75,11 +77,15 @@ dX_1&=\bigg(-\ell X_1(t)+b(2d-1)\bigg)dt+b\sqrt{d}dW_{1}t-b\sqrt{(1-d)}dW_{2}t
 \end{array}
 \end{equation}
 
+Each decision variable, $X_1$ and $X_2$, accumulates information about the stimulus.  The sign and size of the two variables indicate how much evidence there is for each possible decision outcome.  When a lot of evidence for the first possibility has been observed, $X_1$ will be large and positive, and similarly for the second possibility.  If the difference in the variables can be observed, the difference indicates the relative strengths of the evidence for either possibility. If $Y=X_1-X_2$, when $Y$ is large enough the system decides on $X_1$ and when $Y$ is low enough the system decides on $X_2$.  Specifically, there are two thresholds, $-T_2$ and $T_1$ such that if $Y<-T_2$ the decision is for $X_2$ and if $Y>T_1$ the decision is for $X_1$.  However, it may be the case that the difference in the variables cannot be observed.  In this case, the decision depends on whether $X_1$ or $X_2$ hits a threshold first.  Again, there are two thresholds, now $-T_2$ and $-T_1$ and if $X_1<-T_1$ the decision is for $X_1$ and if the $X_2<-T_2$ the decision is for $X_2$.  
+
+In either case, the thresholds affect the expected time until a decision is reached (decision time, DT), the probability that an incorrect decision is made (error rate, ER), and, in the social case, the probability for each animal that he will emit a subordination signal (signaling probability, $\text{SP}_i$).  These quantities, DT, ER, and $\text{SP}_i$, satisfy partial differential equations with respect to the starting values of the decision variables. In Appendix \ref{pdes_deriv}, we derive these partial differential equations.  While an analytical solution is known in the one-dimensional case, the two-dimensional case is analytically intractable.  We therefore numerically solve the PDEs in the two-dimensional case.
+
 In Table \ref{models}, we compare 
 
 A drift diffusion model is equivalent to a sequential probability ratio test, a learning algorithm that is optimal with respect to its accuracy and the time required to make a decision \cite{Moehlis:2004fk,Bogacz:2006uq}.  
 
-The outcome of the decision process is not deterministic. Because of the noise in this system, the utility of a decision depends on the probability of reaching the correct decision and the expected time it takes to reach a decision.  These quantities satisfy partial differential equations with respect to the starting values of the decision variables. In Appendix \ref{pdes_deriv}, we derive these partial differential equations.  While an analytical solution is known in the one-dimensional case, the two-dimensional case is analytically intractable.  We therefore numerically solve the PDEs in the two-dimensional case.
+
 
 \section{Results}
 
@@ -97,6 +103,8 @@ Differences in the threshold between animals could just be explained by individu
 
 \subsection{Social Decision Making }
 A monkey can try to decide whether it is more or less likely to win a fight than another monkey using information from the fights the pair has previously engaged in.  Further, he can try to make such a decision about every other member of its social group.  Since he is trying to use the same algorithm to learn about every other animal, he is constrained to have only one decision threshold for each of these decision processes.  The optimal decision threshold in this social context depends on the distribution of fighting abilities in the group and the decision thresholds of the other animals. 
+
+When waiting for a decision to be made is more costly, so that minimizing DT is prioritized, the resulting distribution of the number of signals received is more skewed with a heavier right tail (Figure \ref{skewness}).
 
 \subsection{Comparison to Social Data }
 Empirically, those pairs of monkeys that take the longest to establish a signaling dynamics are those with the most similar fighting abilities...
@@ -116,6 +124,16 @@ Empirically, those pairs of monkeys that take the longest to establish a signali
 \begin{figure}
 \includegraphics[width=\textwidth]{2d_flexible_thresholds.pdf}
 \caption{\label{2dthresh} When the two thresholds in the two-dimensional case are allowed to vary freely, the decision process can be arbitrarily accurate in a given amount of time, depending on how much lower the weaker animal's threshold is than the stronger animal's threshold.  The expected time to reach a decision is on the x-axis and the probability of reaching the correct decision in that amount of time is on the y-axis.  The curve depends on the ratio of the weaker animal's threshold to the stronger animal's threshold ($\rho$).  Lower ratios are represented in higher darker curves.}
+\end{figure}
+
+\begin{figure}
+
+\caption{\label{givingup} }
+\end{figure}
+
+\begin{figure}
+
+\caption{\label{skewness} }
 \end{figure}
 
 \begin{table}

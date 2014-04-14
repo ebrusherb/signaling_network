@@ -67,9 +67,9 @@ set(gcf,'Units','inches');
 set(gcf,'Position',[.5 1 w h]);
 % set(gca,'FontSize',labfontsz)
 
-p=zeros(1,Nl*2);
+p=zeros(1,2*2);
 
-for i=1:Nl
+for i=1:2
     for j=1:Nd
         subplot(2,2,i)
         hold on
@@ -83,7 +83,7 @@ for i=1:Nl
     set(gca,'YLim',[0 max(threshvals)]);
 end
 
-for i=1:Nl
+for i=1:2
     subplot(2,2,i+2)
     d=domvals(1);
     N=nasheq_ind{2,i,1};
