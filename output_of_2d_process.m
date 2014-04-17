@@ -30,7 +30,7 @@ set(gcf,'Position',[v(1) v(2) w h]);
 
 textlabels={'a' 'b'};
 
-p=zeros(1,2*Nd);
+p=zeros(1,Nd);
 
 currblue=mycolors(Nd,'blue');
 currred=mycolors(Nd,'red');
@@ -42,39 +42,33 @@ for k=1:2
     hold on
     switch k
         case 2
-            for i=2:Nd
+            for i=3:2:Nd
             p(i)=plot(reshape(diag(reshape(twomat(k,i,:,:,2),Nt,[])),1,[]),reshape(diag(reshape(twomat(k,i,:,:,1),Nt,[])),1,[]),'Color',currblue(i,:),'LineWidth',lw);
-            p(i+Nd)=plot(reshape(diag(reshape(onemat(k,i,:,:,2),Nt1,[])),1,[]),reshape(diag(reshape(onemat(k,i,:,:,1),Nt1,[])),1,[]),'Color',currred(i,:),'LineWidth',lw);
+%             p(i+Nd)=plot(reshape(diag(reshape(onemat(k,i,:,:,2),Nt1,[])),1,[]),reshape(diag(reshape(onemat(k,i,:,:,1),Nt1,[])),1,[]),'Color',currred(i,:),'LineWidth',lw);
             end
         otherwise 
-            for i=2:Nd
+            for i=2:2:Nd
             plot(reshape(diag(reshape(twomat(k,i,:,:,2),Nt,[])),1,[]),reshape(diag(reshape(twomat(k,i,:,:,1),Nt,[])),1,[]),'Color',currblue(i,:),'LineWidth',lw);
-            plot(reshape(diag(reshape(onemat(k,i,:,:,2),Nt1,[])),1,[]),reshape(diag(reshape(onemat(k,i,:,:,1),Nt1,[])),1,[]),'Color',currred(i,:),'LineWidth',lw);
+%             plot(reshape(diag(reshape(onemat(k,i,:,:,2),Nt1,[])),1,[]),reshape(diag(reshape(onemat(k,i,:,:,1),Nt1,[])),1,[]),'Color',currred(i,:),'LineWidth',lw);
             end
     end
     set(gca,'xlim',[0 5],'ylim',[.5 1]);
     ylabel('Probability of correct output','FontSize',textfontsz)
     xlabel('Expected time to output','FontSize',textfontsz)
-text(-.4, 1.03,textlabels(k),'HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
+    text(-.4, 1.03,textlabels(k),'HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
 end
 
-leg=legend([p(Nd) p(Nd+Nd) p(Nd+[Nd 2])],'Two','One',['d=' num2str(domvals(2))],['d=' num2str(domvals(Nd))]);
+leg=legend([p([3:2:Nd])],['d=' num2str(domvals(3))],['d=' num2str(domvals(5))],['d=' num2str(domvals(7))],['d=' num2str(domvals(9))],['d=' num2str(domvals(Nd))]);
 legend boxoff
-leg_line=findobj(leg,'type','Line');
-% for i = 1:2
-     set(leg_line(2*1), 'Color', currblack(Nd,:));
-     set(leg_line(2*1-1),'Color',currblack(Nd,:));
-     set(leg_line(2*2), 'Color', currblack(2,:));
-     set(leg_line(2*2-1),'Color',currblack(2,:));
-% end
 
+% 
 set(leg,'Position',[.9 .75 .1 .1])
-    
+%     
 set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[0 0 w h]);
 
-filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','1d_v_2d_symmetric','.pdf');
-% print(filename,'-dpdf','-r300');
+filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','2d_accuracy','.pdf');
+print(filename,'-dpdf','-r300');
 
 %%
 i=1;
@@ -91,24 +85,6 @@ for k=1:Nr
     twoflexthresh(k,:,2)=interp2(threshvals,threshvals,reshape(twomat(i,j,:,:,2),Nt,[]),threshvals,r*threshvals);
 end
 
-%%
-i=1;
-j=(Nd-1);
-
-ratios=[.5 1 2];
-Nr=length(ratios);
-
-oneflexthresh=zeros(Nr,Nt1,2);
-
-for k=1:Nr
-    r=ratios(k);
-    oneflexthresh(k,:,1)=interp2(threshvals1,threshvals1,reshape(onemat(i,j,:,:,1),Nt1,[]),threshvals1,r*threshvals1);
-    oneflexthresh(k,:,2)=interp2(threshvals1,threshvals1,reshape(onemat(i,j,:,:,2),Nt1,[]),threshvals1,r*threshvals1);
-end
-
-%%
-f2=reshape(twoflexthresh(i,:,2),1,[]),reshape(twoflexthresh(i,:,1),1,[]);
-f1=reshape(oneflexthresh(i,:,2),1,[]),reshape(oneflexthresh(i,:,1),1,[]);
 
 %%
 figure
@@ -124,7 +100,7 @@ p=zeros(1,Nr);
 currblue=mycolors(Nr+1,'blue');
 currred=mycolors(Nr+1,'red');
 
-subplot_tight(2,2,1:2,[.1 .07])
+subplot_tight(1,2,1:2,[.1 .07])
 set(gca,'FontSize',labfontsz)
 hold on
 
@@ -140,50 +116,13 @@ for i=1:Nr
     legendlabels(i)=cellstr(['\rho=' num2str(ratios(i))]);
 end
 
-% leg=legend(p(1:5),['d=' num2str(ratios(1))],['d=' num2str(ratios(2))],['d=' num2str(ratios(3))],['d=' num2str(ratios(4))],['d=' num2str(ratios(5))]);
 leg=legend(p,legendlabels);
 legend boxoff
-% leg_line=findobj(leg,'type','Line');
-% for i = 1:Nr
-%      set(leg_line(2*i), 'Color', black(i+1,:));
-%      set(leg_line(2*i-1),'Color',black(i+1,:));
-% end
 
 set(leg,'Position',[.85 .65 .1 .1])
 
-set(gca,'xlim',[.6 1]);
-
-subplot_tight(2,2,3:4,[.1 .07])
-set(gca,'FontSize',labfontsz)
-hold on
-
-for i=1:Nr
-    p(i)=plot(reshape(oneflexthresh(i,:,2),1,[]),reshape(oneflexthresh(i,:,1),1,[]),'Color',currred(i+1,:),'LineWidth',lw);
-end
-
-ylabel('Probability of correct output','FontSize',textfontsz)
-xlabel('Expected time to output','FontSize',textfontsz)
-
-legendlabels={};
-for i=1:Nr
-    legendlabels(i)=cellstr(['\rho=' num2str(ratios(i))]);
-end
-
-% leg=legend(p(1:5),['d=' num2str(ratios(1))],['d=' num2str(ratios(2))],['d=' num2str(ratios(3))],['d=' num2str(ratios(4))],['d=' num2str(ratios(5))]);
-leg=legend(p,legendlabels);
-legend boxoff
-% leg_line=findobj(leg,'type','Line');
-% for i = 1:Nr
-%      set(leg_line(2*i), 'Color', black(i+1,:));
-%      set(leg_line(2*i-1),'Color',black(i+1,:));
-% end
-
-set(leg,'Position',[.85 .25 .1 .1])
-
-set(gca,'xlim',[.6 1]);
-    
 set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[0 0 w h]);
 
 filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','2d_flexible_thresholds','.pdf');
-% print(filename,'-dpdf','-r300');
+print(filename,'-dpdf','-r300');
