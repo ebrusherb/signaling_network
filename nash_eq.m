@@ -69,63 +69,6 @@ for i=1:Nc2
     end
 end
 
-%%
-c1=1;
-c3=0;
-
-c2vals=0:.1:1;
-Nc2=length(c2vals);
-
-nasheq_ind1=cell(Nc2,Nl,Nd);
-giveup2=zeros(Nc2,Nl,Nd);
-
-objective_best1=cell(Nc2,Nl,Nd);
-
-for i=1:Nc2
-    c2=c2vals(i);
-    perf1=zeros(2,Nl,Nd,Nt1,Nt1); %individual, leak, dominance, thresholds
-
-    perf1(1,:,2:Nd,:,:)=c1*(1-onemat(:,2:Nd,:,:,1))+c2*(onemat(:,2:Nd,:,:,2))+c3*(1-onemat(:,2:Nd,:,:,1));
-    perf1(2,:,2:Nd,:,:)=c1*(1-onemat(:,2:Nd,:,:,1))+c2*(onemat(:,2:Nd,:,:,2))+c3*(onemat(:,2:Nd,:,:,1));
-
-    perf1(1,:,1,:,:)=c2*(onemat(:,1,:,:,2))+c3*(1-onemat(:,1,:,:,1));
-    perf1(2,:,1,:,:)=c2*(onemat(:,1,:,:,2))+c3*(onemat(:,1,:,:,1));
-    
-    objective_perf1=zeros(Nl,Nd,Nt1,Nt1);
-    
-    objective_perf1(:,2:Nd,:,:)=max([c1 c3])*(1-onemat(:,2:Nd,:,:,1))+c2*(onemat(:,2:Nd,:,:,2));
-    
-    objective_perf1(:,1,:,:)=c2*(onemat(:,1,:,:,2));
-    
-%     for j=1:Nl
-    for j=1:2
-        for k=1:Nd
-            T1_best=zeros(1,Nt1); 
-            T2_best=zeros(1,Nt1);
-            for u=1:Nt1
-            [~,m]=min(perf1(1,j,k,:,u));
-            T1_best(u)=m;
-            [~,m]=min(perf1(2,j,k,u,:));
-            T2_best(u)=m;
-            end
-            pp1=interp1(indices1,reshape(T1_best,1,[]),'linear','pp');
-            pp2=interp1(indices1,reshape(T2_best,1,[]),'linear','pp');
-            v1=ppval(pp2,indices1);
-            v2=ppval(pp1,v1);
-            T1=indices1(abs((indices1)-v2)<0.01);
-            T2=ppval(pp2,T1);
-            nasheq_ind1{i,j,k}=[T1;T2];
-            
-            if size(nasheq_ind1{i,j,k},2)==1
-                giveup1(i,j,k)=(sum(nasheq_ind1{i,j,k}==[Nt;1])==2);
-            end
-            
-            [minval1 where1]=min(reshape(objective_perf1(j,k,:,:),Nt,[]));
-            [minval2 where2]=min(minval1);
-            objective_best1{i,j,k}=[where1(where2); where2];
-        end
-    end
-end
 
 %%
 whentogiveup=zeros(Nc2,Nl);
