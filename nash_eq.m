@@ -15,7 +15,7 @@ markercol='white';
 c1=0;
 c3=1;
 
-c2vals=0:.1:1;
+c2vals=0:.05:1;
 Nc2=length(c2vals);
 
 nasheq_ind2=cell(Nc2,Nl,Nd);
@@ -98,30 +98,31 @@ ivals=[1 2 5 11];
 
 for I=1:length(ivals)
     i=ivals(I);
-    for j=1:Nd
-        subplot(length(ivals),2,2*I-1)
-        hold on
-        L=size(nasheq_ind2{i,l,j},2);
-        d=domvals(j);
-        num=plot(d*ones(1,L),threshvals(nasheq_ind2{i,l,j}(1,:)),'LineStyle','o','Color','blue','LineWidth',lw,'MarkerSize',markersz+5);
-        p(2*i)=num(1);
-        num=plot(d*ones(1,L),threshvals(nasheq_ind2{i,l,j}(2,:)),'LineStyle','o','Color','red','LineWidth',lw,'MarkerSize',markersz);
-        p(2*i-1)=num(1);
+    subplot(length(ivals),2,2*I-1)
+    hold on
+    v=zeros(2,Nd);
+    for j=2:Nd
+        N=nasheq_ind2{i,l,j};
+        v(1,j)=threshvals(N(1,:));
+        v(2,j)=threshvals(N(2,:));
     end
+    plot(domvals(2:Nd),v(1,2:Nd),'Color','blue','LineWidth',lw)
+    plot(domvals(2:Nd),v(2,2:Nd),'Color','red','LineWidth',lw)
     set(gca,'YLim',[0 max(threshvals)]);
 end
 
 for I=1:length(ivals)
     i=ivals(I);
     subplot(length(ivals),2,2*I)
-    d=domvals(1);
-    N=nasheq_ind2{i,l,1};
-    [hax hline1 hline2]=plotyy(d*ones(1,L),twomat(l,1,N(1,1),N(2,1),1),d*ones(1,L),twomat(l,1,N(1,1),N(2,1),2));
+    d=domvals(2);
+    N=nasheq_ind2{i,2,1};
+    L=size(N,2);
+    [hax hline1 hline2]=plotyy(d*ones(1,L),twomat(l,2,N(1,1),N(2,1),1),d*ones(1,L),twomat(l,2,N(1,1),N(2,1),2));
     set(hline1,'LineStyle','o','Color','red','LineWidth',lw,'MarkerSize',markersz);
     set(hline2,'LineStyle','o','Color','blue','LineWidth',lw,'MarkerSize',markersz);
 
     axes(hax(1)); hold on
-    for j=1:Nd
+    for j=3:Nd
         N=nasheq_ind2{i,l,j};
         L=size(N,2);
         d=domvals(j);
@@ -131,7 +132,7 @@ for I=1:length(ivals)
     end
 
     axes(hax(2)); hold on
-    for j=2:Nd
+    for j=3:Nd
         N=nasheq_ind2{i,l,j};
         L=size(N,2);
         d=domvals(j);
@@ -141,6 +142,6 @@ for I=1:length(ivals)
     end
     
     set(hax(1),'xlim',[.5 1],'ylim',[0 1],'ytick',0:.1:1)
-    set(hax(2),'xlim',[.5 1],'ylim',[0 10],'ytick',0:1:10)
+    set(hax(2),'xlim',[.5 1],'ylim',[0 5],'ytick',0:1:10)
     set(hax,{'ycolor'},{'r';'b'})
 end
