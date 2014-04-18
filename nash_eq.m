@@ -98,14 +98,14 @@ ivals=[1 2 5 11];
 
 for I=1:length(ivals)
     i=ivals(I);
-    subplot(length(ivals),2,2*I-1)
-    hold on
     v=zeros(2,Nd);
     for j=2:Nd
         N=nasheq_ind2{i,l,j};
         v(1,j)=threshvals(N(1,:));
         v(2,j)=threshvals(N(2,:));
     end
+    subplot(length(ivals),4,4*I-3)
+    hold on
     plot(domvals(2:Nd),v(1,2:Nd),'Color','blue','LineWidth',lw)
     plot(domvals(2:Nd),v(2,2:Nd),'Color','red','LineWidth',lw)
     set(gca,'YLim',[0 max(threshvals)]);
@@ -113,35 +113,17 @@ end
 
 for I=1:length(ivals)
     i=ivals(I);
-    subplot(length(ivals),2,2*I)
-    d=domvals(2);
-    N=nasheq_ind2{i,2,1};
-    L=size(N,2);
-    [hax hline1 hline2]=plotyy(d*ones(1,L),twomat(l,2,N(1,1),N(2,1),1),d*ones(1,L),twomat(l,2,N(1,1),N(2,1),2));
-    set(hline1,'LineStyle','o','Color','red','LineWidth',lw,'MarkerSize',markersz);
-    set(hline2,'LineStyle','o','Color','blue','LineWidth',lw,'MarkerSize',markersz);
-
-    axes(hax(1)); hold on
-    for j=3:Nd
+    vprob=zeros(1,Nd);
+    vtime=zeros(1,Nd);
+    for j=2:Nd
         N=nasheq_ind2{i,l,j};
-        L=size(N,2);
-        d=domvals(j);
-        for k=1:L
-            plot(d*ones(1,L),twomat(l,j,N(1,k),N(2,k),1),'LineStyle','o','Color','red','MarkerSize',markersz,'LineWidth',lw)
-        end
+        vprob(j)=twomat(l,j,N(1,k),N(2,k),1);
+        vtime(j)=twomat(l,j,N(1,k),N(2,k),2);
     end
-
-    axes(hax(2)); hold on
-    for j=3:Nd
-        N=nasheq_ind2{i,l,j};
-        L=size(N,2);
-        d=domvals(j);
-        for k=1:L
-            plot(d*ones(1,L),twomat(l,j,N(1,k),N(2,k),2),'LineStyle','o','Color','blue','MarkerSize',markersz,'LineWidth',lw)
-        end
-    end
+    subplot(length(ivals),3,3*I-1)    
+    plot(domvals(2:Nd),vprob(1,2:Nd),'LineWidth',lw)
+    set(gca,'ylim',[.5 1])
     
-    set(hax(1),'xlim',[.5 1],'ylim',[0 1],'ytick',0:.1:1)
-    set(hax(2),'xlim',[.5 1],'ylim',[0 5],'ytick',0:1:10)
-    set(hax,{'ycolor'},{'r';'b'})
+    subplot(length(ivals),3,3*I)
+    plot(domvals(2:Nd),vtime(1,2:Nd),'LineWidth',lw)
 end
