@@ -2,13 +2,13 @@
 %%
 axislw=1.25;
 lw=3;
-labfontsz=15 ;
-textfontsz=15;
+labfontsz=10 ;
+textfontsz=12;
 alpha=.7;
 ticklength=[.02,.0250];
 markersz=5;
 markercol='white';
-
+fontname='Times New Roman';
 
 %%
 
@@ -84,13 +84,13 @@ figure
 set(gcf,'Color','w')
 v=get(gcf,'Position');
 ratio=v(4)/v(3);
-w=5*2;
-h=w*2;
+w=6.83;
+h=.75*w;
 set(gcf,'Units','inches');
 set(gcf,'Position',[.5 1 w h]);
 % set(gca,'FontSize',labfontsz)
-
-p=zeros(1,2*2);
+marg=[.1 .063];
+xpos=.4;
 
 l=1;
 
@@ -104,11 +104,25 @@ for I=1:length(ivals)
         v(1,j)=threshvals(N(1,:));
         v(2,j)=threshvals(N(2,:));
     end
-    subplot(length(ivals),4,4*I-3)
+    subplot_tight(3,length(ivals),I,marg)
     hold on
     plot(domvals(2:Nd),v(1,2:Nd),'Color','blue','LineWidth',lw)
-    plot(domvals(2:Nd),v(2,2:Nd),'Color','red','LineWidth',lw)
-    set(gca,'YLim',[0 max(threshvals)]);
+    plot(domvals(2:Nd),v(2,2:Nd),'--r','LineWidth',lw)
+    set(gca,'YLim',[0 max(threshvals)+threshvals(1)]);
+    set(gca,'FontSize',labfontsz)
+    switch I
+        case 1
+            ylabel('Threshold','FontSize',textfontsz)
+            v=get(get(gca,'ylabel'),'Position');
+            set(get(gca,'ylabel'),'Position',[xpos v(2) v(3)])
+            leg=legend('Stronger','Weaker');
+            legend boxoff
+            set(leg,'Position',[.1 .72 .1 .1])
+            legendshrink(.5,'best',leg)
+%         case 4
+%             xlabel('Probability stronger animal wins','FontSize',textfontsz)
+    end
+    box on
 end
 
 for I=1:length(ivals)
@@ -117,13 +131,42 @@ for I=1:length(ivals)
     vtime=zeros(1,Nd);
     for j=2:Nd
         N=nasheq_ind2{i,l,j};
-        vprob(j)=twomat(l,j,N(1,k),N(2,k),1);
-        vtime(j)=twomat(l,j,N(1,k),N(2,k),2);
+        vprob(j)=twomat(l,j,N(1,:),N(2,:),1);
+        vtime(j)=twomat(l,j,N(1,:),N(2,:),2);
     end
-    subplot(length(ivals),3,3*I-1)    
-    plot(domvals(2:Nd),vprob(1,2:Nd),'LineWidth',lw)
+    subplot_tight(3,length(ivals),I+length(ivals),marg)    
+    plot(domvals(2:Nd),vprob(1,2:Nd),'k','LineWidth',lw)
     set(gca,'ylim',[.5 1])
+    set(gca,'FontSize',labfontsz)
     
-    subplot(length(ivals),3,3*I)
-    plot(domvals(2:Nd),vtime(1,2:Nd),'LineWidth',lw)
+    switch I
+        case 1
+            ylabel('Accuracy','FontSize',textfontsz)
+            v=get(get(gca,'ylabel'),'Position');
+            set(get(gca,'ylabel'),'Position',[xpos v(2) v(3)])
+%         case 4
+%             xlabel('Probability stronger animal wins','FontSize',textfontsz)
+    end
+   
+    subplot_tight(3,length(ivals),I+length(ivals)*2,marg)
+    plot(domvals(2:Nd),vtime(1,2:Nd),'k','LineWidth',lw)
+%     set(gca,'ylim',[0 4])
+    set(gca,'FontSize',labfontsz)
+    switch I
+        case 1
+            ylabel('Time','FontSize',textfontsz)
+            v=get(get(gca,'ylabel'),'Position');
+            set(get(gca,'ylabel'),'Position',[xpos v(2) v(3)])
+%         case 3
+%             xlabel('Probability stronger animal wins','FontSize',textfontsz)
+    end
+
 end
+
+annotation('textbox',[.25 0 .5 .072],'string','Probability stronger animal wins','FontSize',textfontsz,'EdgeColor','none','HorizontalAlignment','center')
+
+set(gcf,'PaperSize',[w h]);
+set(gcf,'PaperPosition',[0 0 w h]);
+
+filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','nasheq_thresholds','.pdf');
+print(filename,'-dpdf','-r300');
