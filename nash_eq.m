@@ -25,6 +25,7 @@ objective_best2=cell(Nc2,Nl,Nd);
 
 for i=1:Nc2
     c2=c2vals(i);
+    c3=1-c2;
     perf2=zeros(2,Nl,Nd,Nt,Nt); %individual, leak, dominance, thresholds
 
     perf2(1,:,2:Nd,:,:)=c1*(1-twomat(:,2:Nd,:,:,1))+c2*(twomat(:,2:Nd,:,:,2))+c3*(1-twomat(:,2:Nd,:,:,1));
@@ -80,6 +81,9 @@ for i=1:Nc2
 end
 
 %%
+textfontsz=12;
+labfontsz=10;
+
 figure
 set(gcf,'Color','w')
 v=get(gcf,'Position');
@@ -94,7 +98,7 @@ xpos=.4;
 
 l=1;
 
-ivals=[1 2 5 11];
+ivals=[1 2 7 11];
 
 for I=1:length(ivals)
     i=ivals(I);
@@ -110,6 +114,8 @@ for I=1:length(ivals)
     plot(domvals(2:Nd),v(2,2:Nd),'--r','LineWidth',lw)
     set(gca,'YLim',[0 max(threshvals)+threshvals(1)]);
     set(gca,'FontSize',labfontsz)
+    titlelab=['w2=',num2str(c2vals(i))];
+    title(titlelab,'FontSize',textfontsz);
     switch I
         case 1
             ylabel('Threshold','FontSize',textfontsz)
@@ -163,10 +169,13 @@ for I=1:length(ivals)
 
 end
 
-annotation('textbox',[.25 0 .5 .072],'string','Probability stronger animal wins','FontSize',textfontsz,'EdgeColor','none','HorizontalAlignment','center')
+annotation('textbox',[.25 0 .5 .072],'string','c','FontSize',textfontsz,'EdgeColor','none','HorizontalAlignment','center')
 
 set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[0 0 w h]);
 
 filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','nasheq_thresholds','.pdf');
 print(filename,'-dpdf','-r300');
+
+
+
