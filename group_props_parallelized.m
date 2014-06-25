@@ -1,16 +1,9 @@
-function toreturn=group_props(c1,c2,c3,its,N,dist)
+function toreturn=group_props_parallelized(c1,c2,c3,its,N,dist,Nl,Nd,Nt,twomat,domvals,threshvals)
 
 if nargin==3
     N=30;
     its=25;
 end
-
-Nl=evalin('base','Nl');
-Nd=evalin('base','Nd');
-Nt=evalin('base','Nt');
-twomat=evalin('base','twomat');
-domvals=evalin('base','domvals');
-threshvals=evalin('base','threshvals');
 
 Nb1=10;
 Nb2=10;

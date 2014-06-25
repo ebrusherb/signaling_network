@@ -49,6 +49,9 @@ plot(indmutinfo(:,2))
 plot(indmutinfo(:,3))
 plot(indmutinfo(:,4))
 %%
+textfontsz=12;
+labfontsz=10;
+
 figure
 set(gcf,'Color','w')
 v=get(gcf,'Position');
@@ -60,7 +63,7 @@ set(gcf,'Units','inches');
 set(gcf,'Position',[.5 1 w h]);
 
 marg=[.1 .065];
-xpos=-10;
+xpos=-4.5;
 
 
 
@@ -151,13 +154,13 @@ for I=1:length(ivals)
     box on
 end
 
-annotation('textbox',[.25 0 .5 .072],'string','True order of fighting ability','FontSize',textfontsz,'EdgeColor','none','HorizontalAlignment','center')
+annotation('textbox',[.25 0 .5 .072],'string','Order of fighting ability','FontSize',textfontsz,'EdgeColor','none','HorizontalAlignment','center')
 
 set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[0 0 w h]);
 
 filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','groupeq_thresholds','.pdf');
-% print(filename,'-dpdf','-r300');
+print(filename,'-dpdf','-r300');
 
 
 %%
@@ -197,13 +200,13 @@ for I=1:length(ivals)
     box on
 end
 
-annotation('textbox',[.15 0.06 .7 .072],'string','True order of fighting ability','FontSize',textfontsz,'EdgeColor','none','HorizontalAlignment','center')
+annotation('textbox',[.15 0.06 .7 .072],'string','Order of fighting ability','FontSize',textfontsz,'EdgeColor','none','HorizontalAlignment','center')
 
 set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[0 0 w h]);
 
 filename=strcat('/Users/eleanorbrush/Desktop/','groupeq_thresholds','.pdf');
-print(filename,'-dpdf','-r300');
+% print(filename,'-dpdf','-r300');
 
 %%
 

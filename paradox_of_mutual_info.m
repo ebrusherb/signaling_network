@@ -1,12 +1,17 @@
-its=10;
+its=100;
 N=20;
 dist='unif';
 
-c11=0;c21=.55;c31=.45;
-c12=.85;c22=.2;c32=.05;
+% c11=0;c21=.2;c31=.8;
+% c11=.4;c21ç=.6;c31=0;
+% c12=.9;c22=.1;c32=0;
+c11=0;c21=.4;c31=.6;
+c12=.9;c22=.1;c32=0;
+% c11=0;c21=.55;c31=.45;
+% c12=.85;c22=.2;c32=.05;
 
-Nb1=5;
-Nb2=5;
+Nb1=10;
+Nb2=10;
 infomat1=zeros(Nb1,Nb2);
 infomat2=zeros(Nb1,Nb2);
 skewvals1=zeros(1,its);
@@ -197,28 +202,52 @@ for c=1:its
         end
     end
     
-    numsig1=sum(probmat1,2);
-    numsig2=sum(probmat2,2);
+    sigmat1=zeros(N,N);
+    sigmat2=zeros(N,N);
+    
+    for i=1:N
+        for j=(i+1):N
+            draw=rand;
+            if draw <=probmat1(i,j)
+                sigmat1(i,j)=1;
+            else sigmat1(j,i)=1;
+            end
+            if draw <=probmat2(i,j)
+                sigmat2(i,j)=1;
+            else sigmat2(j,i)=1;
+            end
+        end
+    end
+                
+%     power1=sum(probmat1,2);
+%     power2=sum(probmat2,2);
+%     power1=sum(sigmat1,2).^2;
+%     power2=sum(sigmat2,2).^2;
+% power1=sum(probmat1.*sigmat1,2);
+% power2=sum(probmat2.*sigmat2,2);
+power1=sum(sigmat1.*(1-timemat1),2);
+power2=sum(sigmat2.*(1-timemat2),2);
+
     
     abilitiesdiff=ceil(max(fighting_abilities))-floor(min(fighting_abilities));
     abilitiesbins=floor(min(fighting_abilities)):abilitiesdiff/Nb1:ceil(max(fighting_abilities));
     [~,abilitiesindices]=histc(fighting_abilities,abilitiesbins);
     
-    sigdiff1=ceil(max(numsig1))-floor(min(numsig1));
-    sigbins1=floor(min(numsig1)):sigdiff1/Nb2:ceil(max(numsig1));
-    [~,sigindices1]=histc(numsig1,sigbins1);
+    sigdiff1=ceil(max(power1))-floor(min(power1))+.1;
+    sigbins1=(floor(min(power1))-.05):(sigdiff1/Nb2):(ceil(max(power1))+.05);
+    [~,sigindices1]=histc(power1,sigbins1);
     
-    sigdiff2=ceil(max(numsig2))-floor(min(numsig2));
-    sigbins2=floor(min(numsig2)):sigdiff2/Nb2:ceil(max(numsig2));
-    [~,sigindices2]=histc(numsig2,sigbins2);
+    sigdiff2=ceil(max(power2))-floor(min(power2))+.1;
+    sigbins2=(floor(min(power2))-.05):(sigdiff2/Nb2):(ceil(max(power2))+.05);
+    [~,sigindices2]=histc(power2,sigbins2);
     
     for i=1:N
         infomat1(abilitiesindices(i),sigindices1(i))=infomat1(abilitiesindices(i),sigindices1(i))+1;
         infomat2(abilitiesindices(i),sigindices2(i))=infomat2(abilitiesindices(i),sigindices2(i))+1;
     end
     
-    skewvals1(c)=skewness(numsig1);
-    skewvals2(c)=skewness(numsig2);
+    skewvals1(c)=skewness(power1);
+    skewvals2(c)=skewness(power2);
     
     for i=1:N
         for j=1:(i-1) 
