@@ -1,362 +1,196 @@
-its=100;
+its=1;
 N=20;
 dist='unif';
+extendeddomvals=[1-domvals(end:-1:2) domvals];
+v=1:(Nd+Nd-1);
+deps=.05;
 
-% c11=0;c21=.2;c31=.8;
 % c11=.4;c21ç=.6;c31=0;
 % c12=.9;c22=.1;c32=0;
-c11=0;c21=.4;c31=.6;
-c12=.9;c22=.1;c32=0;
+% c11=0;c21=.4;c31=.6;
+% c12=.9;c22=.1;c32=0;
 % c11=0;c21=.55;c31=.45;
 % c12=.85;c22=.2;c32=.05;
 
+c11=0;c21=.3;c31=7;
+c12=.7;c22=.3;c32=0;
+c13=0;c23=.3;c33=.7;
+
+% cvals=[c11 c21 c31; c12 c22 c32];
+cvals=[c12,c22,c32];
+totalc=size(cvals,1);
+
 Nb1=10;
 Nb2=10;
-infomat1=zeros(Nb1,Nb2);
-infomat2=zeros(Nb1,Nb2);
-skewvals1=zeros(1,its);
-skewvals2=zeros(1,its);
-finalthresh1=zeros(N,its);
-finalthresh2=zeros(N,its);
 
-indinfomats1=zeros(N,2,2);
-indinfomats2=zeros(N,2,2);
-indmutinfos1=zeros(N,its);
-indmutinfos2=zeros(N,its);
+seqoptthresh=zeros(its,totalc,N);
+seqprobmat=zeros(its,totalc,N,N);
+seqaccmat=zeros(its,totalc,N,N);
+seqtimemat=zeros(its,totalc,N,N);
+seqsigmat=zeros(its,totalc,N,N);
+perfvalssaved=zeros(its,totalc,N);
 
 for c=1:its
 
-    opt_its=10;
-
-    fighting_abilities=zeros(1,N);
+    for ic=1:totalc
+ 
+        c1=cvals(ic,1);
+        c2=cvals(ic,2);
+        c3=cvals(ic,3);
+        l=1;
     
-    switch dist
-        case 'unif'
-            fighting_abilities=20*rand(1,N);
-        case 'norm'
-            fighting_abilities=normrnd(0,10,1,N);
-        case 'lognorm'
-            fighting_abilities=lognrnd(0,1,1,N);
-    end
-    
-    fighting_abilities=sort(fighting_abilities,'descend');
+        opt_its=10;
 
-    dmat=zeros(N); %turn difference in fighting abilities into probabilitise of winning
-    extendeddomvals=[1-domvals(end:-1:2) domvals];
-    v=1:(Nd+Nd-1);
-    deps=.05;
-
-    for i=1:N
-        for j=[1:(i-1),(i+1):N]
-            diff=fighting_abilities(i)-fighting_abilities(j);
-            d=exp(diff)/(exp(diff)+1);
-            d=floor(round(d/deps))*deps;
-            dmat(i,j)=v(abs(d-extendeddomvals)<=deps/2);
-        end
-    end
-
-    %size(twomat)=[Nl,Nd,Nt,Nt,2];
-    
-    perf1=zeros(2,Nl,Nd,Nt,Nt); %individual, leak, dominance, thresholds
-
-    perf1(1,:,2:Nd,:,:)=c11*(1-twomat(:,2:Nd,:,:,1))+c21*(twomat(:,2:Nd,:,:,2))+c31*(1-twomat(:,2:Nd,:,:,1));
-    perf1(2,:,2:Nd,:,:)=c11*(1-twomat(:,2:Nd,:,:,1))+c21*(twomat(:,2:Nd,:,:,2))+c31*(twomat(:,2:Nd,:,:,1));
-
-    perf1(1,:,1,:,:)=c21*(twomat(:,1,:,:,2))+c31*(1-twomat(:,1,:,:,1));
-    perf1(2,:,1,:,:)=c21*(twomat(:,1,:,:,2))+c31*(twomat(:,1,:,:,1));
-    
-    perf2=zeros(2,Nl,Nd,Nt,Nt); %individual, leak, dominance, thresholds
-
-    perf2(1,:,2:Nd,:,:)=c12*(1-twomat(:,2:Nd,:,:,1))+c22*(twomat(:,2:Nd,:,:,2))+c32*(1-twomat(:,2:Nd,:,:,1));
-    perf2(2,:,2:Nd,:,:)=c12*(1-twomat(:,2:Nd,:,:,1))+c22*(twomat(:,2:Nd,:,:,2))+c32*(twomat(:,2:Nd,:,:,1));
-
-    perf2(1,:,1,:,:)=c22*(twomat(:,1,:,:,2))+c32*(1-twomat(:,1,:,:,1));
-    perf2(2,:,1,:,:)=c22*(twomat(:,1,:,:,2))+c32*(twomat(:,1,:,:,1));
-
-    l=1;
-
-    Tvals1=zeros(N,opt_its);
-    Tvals1(:,1)=2*ones(N,1);
-    % Tvals(:,1)=randi([1 Nt],N,1);
-    perfvals1=zeros(N,opt_its);
-    
-    Tvals2=zeros(N,opt_its);
-    Tvals2(:,1)=2*ones(N,1);
-    perfvals2=zeros(N,opt_its);
-
-    for i=1:N
-        opp_thresh=Tvals1([1:(i-1),(i+1):N],1);
-        ds=dmat(i,[1:(i-1),(i+1):N]);
-        perfsum=0;
-                for q=1:(N-1)
-                    if ds(q)<=Nd-1
-                        perfsum=perfsum+perf1(2,l,Nd-ds(q)+1,opp_thresh(q),Tvals1(i,1)); 
-                    else 
-                        perfsum=perfsum+perf1(1,l,ds(q)-Nd+1,Tvals1(i,1),opp_thresh(q));
-                    end
-                end  
-        perfvals1(i,1)=perfsum;
+        fighting_abilities=zeros(1,N);
         
-        opp_thresh=Tvals2([1:(i-1),(i+1):N],1);
-        ds=dmat(i,[1:(i-1),(i+1):N]);
-        perfsum=0;
-                for q=1:(N-1)
-                    if ds(q)<=Nd-1
-                        perfsum=perfsum+perf2(2,l,Nd-ds(q)+1,opp_thresh(q),Tvals2(i,1)); 
-                    else 
-                        perfsum=perfsum+perf2(1,l,ds(q)-Nd+1,Tvals2(i,1),opp_thresh(q));
-                    end
-                end  
-        perfvals2(i,1)=perfsum;
-    end
+        fighting_abilities=20*rand(1,N);
 
-    count=1;
-    while count<=opt_its
+        fighting_abilities=sort(fighting_abilities,'descend');
+
+        dmat=zeros(N); %turn difference in fighting abilities into probabilitise of winning
+        
         for i=1:N
-            opp_thresh=Tvals1([1:(i-1),(i+1):N],count);
-            ds=dmat(i,[1:(i-1),(i+1):N]);
-            perftest=zeros(1,Nt);
-            for j=1:Nt
-                perfsum=0;
-                for q=1:(N-1)
-                    if ds(q)<=Nd-1
-                        perfsum=perfsum+perf1(2,l,Nd-ds(q)+1,opp_thresh(q),j);
-                    else 
-                        perfsum=perfsum+perf1(1,l,ds(q)-Nd+1,j,opp_thresh(q));
-                    end
-                end 
-                perftest(j)=perfsum;
+            for j=[1:(i-1),(i+1):N]
+                diff=fighting_abilities(i)-fighting_abilities(j);
+                d=exp(diff)/(exp(diff)+1);
+                d=floor(round(d/deps))*deps;
+                dmat(i,j)=v(abs(d-extendeddomvals)<=deps/2);
             end
-            [p,n]=min(perftest);
-            Tvals1(i,count+1)=n;
-            perfvals1(i,count+1)=p;
-            
-            opp_thresh=Tvals2([1:(i-1),(i+1):N],count);
-            ds=dmat(i,[1:(i-1),(i+1):N]);
-            perftest=zeros(1,Nt);
-            for j=1:Nt
-                perfsum=0;
-                for q=1:(N-1)
-                    if ds(q)<=Nd-1
-                        perfsum=perfsum+perf2(2,l,Nd-ds(q)+1,opp_thresh(q),j);
-                    else 
-                        perfsum=perfsum+perf2(1,l,ds(q)-Nd+1,j,opp_thresh(q));
-                    end
-                end 
-                perftest(j)=perfsum;
-            end
-            [p,n]=min(perftest);
-            Tvals2(i,count+1)=n;
-            perfvals2(i,count+1)=p;
         end
-        if sum(Tvals1(:,count+1)==Tvals1(:,count))==N && sum(Tvals2(:,count+1)==Tvals2(:,count))==N
-            maxit=count+2;
-            count=opt_its+1;
-            Tvals1(:,maxit:end)=[];
-            perfvals1(:,maxit:end)=[];
-            
-            Tvals2(:,maxit:end)=[];
-            perfvals2(:,maxit:end)=[];
-        end
-        count=count+1;
-    end
-    
-    finalthresh1(:,c)=threshvals(Tvals1(:,end));
-    if c==its
-        threshtohist1=threshvals(Tvals1(:,end));
-    end
-    finalthresh2(:,c)=threshvals(Tvals2(:,end));
-    if c==its
-        threshtohist2=threshvals(Tvals2(:,end));
-    end
 
-    probmat1=zeros(N,N);
-    timemat1=zeros(N,N);
-    
-    probmat2=zeros(N,N);
-    timemat2=zeros(N,N);
+        %size(twomat)=[Nl,Nd,Nt,Nt,2];
 
-    %size(twomat)=[Nl,Nd,Nt,Nt,2];
+        perf=zeros(2,Nd,Nt,Nt); %individual, leak, dominance, thresholds
 
-    for i=1:N
-        for j=[1:(i-1),(i+1):N]
-            if dmat(i,j)<=Nd-1
-                probmat1(i,j)=1-twomat(l,Nd-dmat(i,j)+1,Tvals1(j,end),Tvals1(i,end),1);
-                timemat1(i,j)=twomat(l,Nd-dmat(i,j)+1,Tvals1(j,end),Tvals1(i,end),2);
-            else
-                probmat1(i,j)=twomat(l,dmat(i,j)-Nd+1,Tvals1(i,end),Tvals1(j,end),1);
-                timemat1(i,j)=twomat(l,dmat(i,j)-Nd+1,Tvals1(i,end),Tvals1(j,end),2);
-            end
-        end
-    end
-    
-    for i=1:N
-        for j=[1:(i-1),(i+1):N]
-            if dmat(i,j)<=Nd-1
-                probmat2(i,j)=1-twomat(l,Nd-dmat(i,j)+1,Tvals2(j,end),Tvals2(i,end),1);
-                timemat2(i,j)=twomat(l,Nd-dmat(i,j)+1,Tvals2(j,end),Tvals2(i,end),2);
-            else
-                probmat2(i,j)=twomat(l,dmat(i,j)-Nd+1,Tvals2(i,end),Tvals2(j,end),1);
-                timemat2(i,j)=twomat(l,dmat(i,j)-Nd+1,Tvals2(i,end),Tvals2(j,end),2);
-            end
-        end
-    end
-    
-    sigmat1=zeros(N,N);
-    sigmat2=zeros(N,N);
-    
-    for i=1:N
-        for j=(i+1):N
-            draw=rand;
-            if draw <=probmat1(i,j)
-                sigmat1(i,j)=1;
-            else sigmat1(j,i)=1;
-            end
-            if draw <=probmat2(i,j)
-                sigmat2(i,j)=1;
-            else sigmat2(j,i)=1;
-            end
-        end
-    end
+        perf(1,2:Nd,:,:)=c1*(1-twomat(l,2:Nd,:,:,1))+c2*(twomat(l,2:Nd,:,:,2))+c3*(1-twomat(l,2:Nd,:,:,1));
+        perf(2,2:Nd,:,:)=c1*(1-twomat(l,2:Nd,:,:,1))+c2*(twomat(l,2:Nd,:,:,2))+c3*(twomat(l,2:Nd,:,:,1));
+
+        perf(1,1,:,:)=c2*(twomat(l,1,:,:,2))+c3*(1-twomat(l,1,:,:,1));
+        perf(2,1,:,:)=c2*(twomat(l,1,:,:,2))+c3*(twomat(l,1,:,:,1));
+
+        Tvals=zeros(N,opt_its);
+        Tvals(:,1)=2*ones(N,1);
+
+        count=1;
+        while count<=opt_its
+            for i=1:N
+                opp_thresh=Tvals([1:(i-1),(i+1):N],count);
+                ds=dmat(i,[1:(i-1),(i+1):N]);
+                perftest=zeros(1,Nt);
+                for j=1:Nt
+                    perfsum=0;
+                    for q=1:(N-1)
+                        if ds(q)<=Nd-1
+                            perfsum=perfsum+perf(2,Nd-ds(q)+1,opp_thresh(q),j);
+                        else 
+                            perfsum=perfsum+perf(1,ds(q)-Nd+1,j,opp_thresh(q));
+                        end
+                    end 
+                    perftest(j)=perfsum;
+                end
+                [p,n]=min(perftest);
+                Tvals(i,count+1)=n;
                 
-%     power1=sum(probmat1,2);
-%     power2=sum(probmat2,2);
-%     power1=sum(sigmat1,2).^2;
-%     power2=sum(sigmat2,2).^2;
-% power1=sum(probmat1.*sigmat1,2);
-% power2=sum(probmat2.*sigmat2,2);
-power1=sum(sigmat1.*(1-timemat1),2);
-power2=sum(sigmat2.*(1-timemat2),2);
-
-    
-    abilitiesdiff=ceil(max(fighting_abilities))-floor(min(fighting_abilities));
-    abilitiesbins=floor(min(fighting_abilities)):abilitiesdiff/Nb1:ceil(max(fighting_abilities));
-    [~,abilitiesindices]=histc(fighting_abilities,abilitiesbins);
-    
-    sigdiff1=ceil(max(power1))-floor(min(power1))+.1;
-    sigbins1=(floor(min(power1))-.05):(sigdiff1/Nb2):(ceil(max(power1))+.05);
-    [~,sigindices1]=histc(power1,sigbins1);
-    
-    sigdiff2=ceil(max(power2))-floor(min(power2))+.1;
-    sigbins2=(floor(min(power2))-.05):(sigdiff2/Nb2):(ceil(max(power2))+.05);
-    [~,sigindices2]=histc(power2,sigbins2);
-    
-    for i=1:N
-        infomat1(abilitiesindices(i),sigindices1(i))=infomat1(abilitiesindices(i),sigindices1(i))+1;
-        infomat2(abilitiesindices(i),sigindices2(i))=infomat2(abilitiesindices(i),sigindices2(i))+1;
-    end
-    
-    skewvals1(c)=skewness(power1);
-    skewvals2(c)=skewness(power2);
-    
-    for i=1:N
-        for j=1:(i-1) 
-            indinfomats1(i,1,1)=indinfomats1(i,1,1)+probmat1(j,i);
-            indinfomats1(i,1,2)=indinfomats1(i,1,2)+probmat1(i,j);
-            
-            indinfomats2(i,1,1)=indinfomats2(i,1,1)+probmat2(j,i);
-            indinfomats2(i,1,2)=indinfomats2(i,1,2)+probmat2(i,j);
-        end
-        for j=(i+1):N
-            indinfomats1(i,2,1)=indinfomats1(i,2,1)+probmat1(j,i);
-            indinfomats1(i,2,2)=indinfomats1(i,2,2)+probmat1(i,j);
-            
-            indinfomats2(i,2,1)=indinfomats2(i,2,1)+probmat1(j,i);
-            indinfomats2(i,2,2)=indinfomats2(i,2,2)+probmat1(i,j);
-        end
-    end
-    indinfomats1=indinfomats1/(N-1);
-    indinfomats2=indinfomats2/(N-1);
-%     indinfomats(25,:)
-
-    for i=1:N
-        for j=1:2
-            px=sum(indinfomats1(i,j,:));
-            for k=1:2
-               py=sum(indinfomats1(i,:,k));
-               pxy=indinfomats1(i,j,k);
-               if pxy~=0
-                   indmutinfos1(i,c)=indmutinfos1(i,c)+pxy*log(pxy/px/py);
-               end
             end
-        end
-    end
-    
-    for i=1:N
-        for j=1:2
-            px=sum(indinfomats2(i,j,:));
-            for k=1:2
-               py=sum(indinfomats2(i,:,k));
-               pxy=indinfomats2(i,j,k);
-               if pxy~=0
-                   indmutinfos2(i,c)=indmutinfos2(i,c)+pxy*log(pxy/px/py);
-               end
+            
+            if sum(Tvals(:,count+1)==Tvals(:,count))==N
+                Tvals(:,count+2)=Tvals(:,count+1);
+                perfvec=zeros(N,1);
+                for i=1:N
+                    opp_thresh=Tvals([1:(i-1),(i+1):N],count+1);
+                    ds=dmat(i,[1:(i-1),(i+1):N]);
+                    perfsum=0;
+                            for q=1:(N-1)
+                                if ds(q)<=Nd-1
+                                    perfsum=perfsum+perf(2,Nd-ds(q)+1,opp_thresh(q),Tvals(i,count+1)); 
+                                else 
+                                    perfsum=perfsum+perf(1,ds(q)-Nd+1,Tvals(i,count+1),opp_thresh(q));
+                                end
+                            end  
+                    perfvec(i)=perfsum;
+                end
+                
+                maxit=count+3;
+                count=opt_its+1;
+                Tvals(:,maxit:end)=[];
+                seqoptthresh(c,ic,:)=Tvals(:,end);
             end
+            count=count+1;
         end
+        
+       perfvalssaved(c,ic,:)=perfvec;
+      
     end
+  
 end
 
-indmutinfos1=mean(indmutinfos1,2);
-indmutinfos2=mean(indmutinfos2,2);
+% avgoptthresh=reshape(mean(seqoptthresh,1),2,[])';
 
-groupmutinfo1=0;
-groupmutinfo2=0;
+%%
+[probmat1,timemat1,accmat1]=thresh2mat(seqoptthresh(end,1,:),twomat,dmat,l);
+perfrightthresh1=cvals(1,1)*(1-accmat1)+cvals(1,2)*timemat1+cvals(1,3)*(1-probmat1);
+[reshape(perfvalssaved(end,1,:),[],1) sum(perfrightthresh1,2)]
 
-mutmat1=zeros(Nb1,Nb2);
-mutmat2=zeros(Nb1,Nb2);
+%%
+[probmat2,timemat2,accmat2]=thresh2mat(seqoptthresh(end,2,:),twomat,dmat,l);
+perfrightthresh2=cvals(2,1)*(1-accmat2)+cvals(2,2)*timemat2+cvals(2,3)*(1-probmat2);
+[reshape(perfvalssaved(end,2,:),[],1)-sum(perfrightthresh2,2)]
+%%
+[probmat3,timemat3,accmat3]=thresh2mat(seqoptthresh(end,3,:),twomat,dmat,l);
+perfrightthresh3=cvals(3,1)*(1-accmat3)+cvals(3,2)*timemat3+cvals(3,3)*(1-probmat3);
+[reshape(perfvalssaved(end,2,:),[],1) sum(perfrightthresh3,2)]
+%%
 
-for i=1:Nb1
-    px=sum(infomat1(i,:))/(N*its);
-    for j=1:Nb2
-        py=sum(infomat1(:,j))/(N*its);
-        pxy=infomat1(i,j)/(N*its);
-        if pxy~=0
-            groupmutinfo1=groupmutinfo1+pxy*log(pxy/px/py);
-            mutmat1(i,j)=pxy*log(pxy/px/py);
-        end
-    end
+[probmat1,timemat1,accmat1]=thresh2mat(seqoptthresh(end,1,:),twomat,dmat,l);
+[probmat2,timemat2,accmat2]=thresh2mat(seqoptthresh(end,2,:),twomat,dmat,l);
+
+perfrightthresh1=cvals(1,1)*(1-accmat1)+cvals(1,2)*timemat1+cvals(1,3)*(1-probmat1);
+perfwrongthresh1=cvals(1,1)*(1-accmat2)+cvals(1,2)*timemat2+cvals(1,3)*(1-probmat2);
+
+perfrightthresh2=cvals(2,1)*(1-accmat2)+cvals(2,2)*timemat2+cvals(2,3)*(1-probmat2);
+perfwrongthresh2=cvals(2,1)*(1-accmat1)+cvals(2,2)*timemat1+cvals(2,3)*(1-probmat1);
+
+
+%%
+accuracylookup=zeros(2,Nd,Nt,Nt); %individual, leak, dominance, thresholds
+
+accuracylookup(1,2:Nd,:,:)=(1-twomat(l,2:Nd,:,:,1));
+accuracylookup(2,2:Nd,:,:)=(1-twomat(l,2:Nd,:,:,1));
+
+accuracylookup(1,1,:,:)=0;
+accuracylookup(2,1,:,:)=0;
+
+dominancelookup=zeros(2,Nd,Nt,Nt); %individual, leak, dominance, thresholds
+
+dominancelookup(1,1:Nd,:,:)=(1-twomat(l,1:Nd,:,:,1));
+dominancelookup(2,1:Nd,:,:)=(twomat(l,1:Nd,:,:,1));
+
+Tvals=reshape(seqoptthresh(its,:,:),totalc,[]); 
+accperfvals=zeros(totalc,N);
+domperfvals=zeros(totalc,N);
+
+for ic=1:totalc
+    
+for i=1:N
+    opp_thresh=Tvals(ic,[1:(i-1),(i+1):N]);
+    ds=dmat(i,[1:(i-1),(i+1):N]);
+    perfsum=0;
+        for q=1:(N-1)
+            if ds(q)<=Nd-1
+                perfsum=perfsum+accuracylookup(2,Nd-ds(q)+1,opp_thresh(q),Tvals(ic,i)); 
+            else 
+                perfsum=perfsum+accuracylookup(1,ds(q)-Nd+1,Tvals(ic,i),opp_thresh(q));
+            end
+        end  
+    accperfvals(ic,i)=perfsum;
+    perfsum=0;
+        for q=1:(N-1)
+            if ds(q)<=Nd-1
+                perfsum=perfsum+dominancelookup(2,Nd-ds(q)+1,opp_thresh(q),Tvals(ic,i)); 
+            else 
+                perfsum=perfsum+dominancelookup(1,ds(q)-Nd+1,Tvals(ic,i),opp_thresh(q));
+            end
+        end 
+    domperfvals(ic,i)=perfsum;
 end
-
-for i=1:Nb1
-    px=sum(infomat2(i,:))/(N*its);
-    for j=1:Nb2
-        py=sum(infomat2(:,j))/(N*its);
-        pxy=infomat2(i,j)/(N*its);
-        if pxy~=0
-            groupmutinfo2=groupmutinfo2+pxy*log(pxy/px/py);
-            mutmat2(i,j)=pxy*log(pxy/px/py);
-        end
-    end
 end
-
-avgthresh1=mean(finalthresh1,2);
-avgthresh2=mean(finalthresh2,2);
-
-figure
-subplot(2,4,1)
-plot(avgthresh1)
-subplot(2,4,2)
-imagesc(infomat1)
-subplot(2,4,3)
-imagesc(mutmat1)
-colorbar
-subplot(2,4,4)
-imagesc(probmat1)
-colorbar
-
-subplot(2,4,5)
-plot(avgthresh2)
-subplot(2,4,6)
-imagesc(infomat2)
-subplot(2,4,7)
-imagesc(mutmat2)
-colorbar
-subplot(2,4,8)
-imagesc(probmat2)
-colorbar
-
-groupmutinfo1
-groupmutinfo2
-
-
-

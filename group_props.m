@@ -148,7 +148,7 @@ for c=1:its
     end
     
 %     power=sum(probmat,2);
-    power=sum(sigmat,2);
+    power=sum(sigmat.*(1-timemat),2);
     
     abilitiesdiff=ceil(max(fighting_abilities))-floor(min(fighting_abilities));
     abilitiesbins=floor(min(fighting_abilities)):abilitiesdiff/Nb1:ceil(max(fighting_abilities));

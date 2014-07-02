@@ -13,7 +13,7 @@ fontname='Times New Roman';
 its=1000;
 N=20;
 
-cstep=.05;
+cstep=.1;
 vec=0:cstep:1;
 l=length(vec);
 
@@ -35,7 +35,7 @@ l=length(X);
 skewvals=zeros(1,l);
 mutvals=zeros(1,l);
 
-for i=1:1
+for i=1:l
     c1=X(i);
     c2=Y(i);
     c3=Z(i);
@@ -49,6 +49,7 @@ scaledskewvals=scaledskewvals/max(scaledskewvals);
 
 scaledmutvals=mutvals-min(mutvals);
 scaledmutvals=scaledmutvals/max(scaledmutvals);
+
 %%
 filename=strcat('skewvals','.mat');
 save(filename,'c1','c2','c3','mutvals','skewvals');
@@ -107,7 +108,7 @@ set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[-w/10 -h/50 1.1*w 1.05*h]);
 
 filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','skewness_heatmap','.pdf');
-print(filename,'-dpdf','-r300');
+% print(filename,'-dpdf','-r300');
 %%
 textfontsz=20;
 labfontsz=15;
