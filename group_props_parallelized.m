@@ -8,16 +8,21 @@ end
 Nb1=10;
 Nb2=10;
 l=1;
+weight=.05;
+
 keeptrackofinfoD=zeros(its,Nb1*Nb2);
 keeptrackofinfoR=zeros(its,Nb1*Nb2);
 keeptrackofinfoDelta=zeros(its,Nb1*Nb2);
 keeptrackofinfoH=zeros(its,Nb1*Nb2);
 keeptrackofinfoPi=zeros(its,Nb1*Nb2);
+keeptrackofinfoC=zeros(its,Nb1*Nb2);
+keeptrackofinfoprobs=zeros(its,Nb1*Nb2);
 infomatD=zeros(Nb1,Nb2);
 infomatR=zeros(Nb1,Nb2);
 infomatDelta=zeros(Nb1,Nb2);
 infomatH=zeros(Nb1,Nb2);
 infomatPi=zeros(Nb1,Nb2);
+infomatC=zeros(Nb1,Nb2);
 infomatprobs=zeros(Nb1,Nb2);
 
 powerfuns={'D','R','Delta','H','Pi','probs'};
@@ -29,6 +34,7 @@ skewvalsDelta=zeros(1,its);
 skewvalsH=zeros(1,its);
 skewvalsPi=zeros(1,its);
 skewvalsprobs=zeros(1,its);
+skewvalsC=zeros(1,its);
 finalthresh=zeros(N,its);
 
 keepprobmat=zeros(its,N*N);
@@ -36,6 +42,7 @@ keeptimemat=zeros(its,N*N);
 keepsigmat=zeros(its,N*N);
 
 pairwiseaccuracy=zeros(1,its);
+pairwisetime=zeros(1,its);
 
 for c=1:its
 
@@ -61,8 +68,8 @@ for c=1:its
 
     for i=1:N
         for j=[1:(i-1),(i+1):N]
-            diff=fighting_abilities(i)-fighting_abilities(j);
-            d=exp(diff)/(exp(diff)+1);
+            abilitydiff=fighting_abilities(i)-fighting_abilities(j);
+            d=exp(abilitydiff)/(exp(abilitydiff)+1);
             d=floor(round(d/deps))*deps;
             dmat(i,j)=v(abs(d-extendeddomvals)<=deps/2);
         end
@@ -162,6 +169,7 @@ for c=1:its
     end
     
     pairwiseaccuracy(c)=sum(sum(triu(binsigmat,1)));
+    pairwisetime(c)=sum(sum(triu(timemat,1)));
     
     sigmat=binsigmat.*(max(max(timemat))+1-timemat);
     
@@ -179,6 +187,7 @@ for c=1:its
     powervecH=sum(entmat,2);
     powervecH=real(powervecH);
     powervecPi=(powervecR).*(powervecH);
+    powervecC=eigcentrality(sigmat,weight);
     powervecprobs=sum(probmat,2);
     
     abilitiesdiff=ceil(max(fighting_abilities))-floor(min(fighting_abilities));
@@ -186,8 +195,13 @@ for c=1:its
     [~,abilitiesindices]=histc(fighting_abilities,abilitiesbins);
     
     powervec=powervecD;
-    powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
-    powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+%     powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
+%     powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+    q=quantile(powervec,0:1/Nb2:1);
+    diffvec=diff(q);
+    eps=min(diffvec(diffvec~=0))/10;
+    q(1)=q(1)-eps;q(end)=q(end)+eps;
+    powerbins=q;
     [~,powerindices]=histc(powervec,powerbins);
     
     v=zeros(Nb1*Nb2,1);
@@ -200,8 +214,13 @@ for c=1:its
     skewvalsD(c)=skewness(powervec);
     
     powervec=powervecR;
-    powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
-    powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+%     powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
+%     powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+    q=quantile(powervec,0:1/Nb2:1);
+    diffvec=diff(q);
+    eps=min(diffvec(diffvec~=0))/10;
+    q(1)=q(1)-eps;q(end)=q(end)+eps;
+    powerbins=q;
     [~,powerindices]=histc(powervec,powerbins);
     
     v=zeros(Nb1*Nb2,1);
@@ -214,8 +233,13 @@ for c=1:its
     skewvalsR(c)=skewness(powervec);
     
     powervec=powervecDelta;
-    powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
-    powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+%     powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
+%     powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+    q=quantile(powervec,0:1/Nb2:1);
+    diffvec=diff(q);
+    eps=min(diffvec(diffvec~=0))/10;
+    q(1)=q(1)-eps;q(end)=q(end)+eps;
+    powerbins=q;
     [~,powerindices]=histc(powervec,powerbins);
     
     v=zeros(Nb1*Nb2,1);
@@ -228,8 +252,13 @@ for c=1:its
     skewvalsDelta(c)=skewness(powervec);
     
     powervec=powervecH;
-    powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
-    powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+%     powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
+%     powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+    q=quantile(powervec,0:1/Nb2:1);
+    diffvec=diff(q);
+    eps=min(diffvec(diffvec~=0))/10;
+    q(1)=q(1)-eps;q(end)=q(end)+eps;
+    powerbins=q;
     [~,powerindices]=histc(powervec,powerbins);
     
     v=zeros(Nb1*Nb2,1);
@@ -242,8 +271,13 @@ for c=1:its
     skewvalsH(c)=skewness(powervec);
     
     powervec=powervecPi;
-    powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
-    powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+%     powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
+%     powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+    q=quantile(powervec,0:1/Nb2:1);
+    diffvec=diff(q);
+    eps=min(diffvec(diffvec~=0))/10;
+    q(1)=q(1)-eps;q(end)=q(end)+eps;
+    powerbins=q;
     [~,powerindices]=histc(powervec,powerbins);
     
     v=zeros(Nb1*Nb2,1);
@@ -255,9 +289,33 @@ for c=1:its
     
     skewvalsPi(c)=skewness(powervec);
     
+    powervec=powervecC;
+%     powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
+%     powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+    q=quantile(powervec,0:1/Nb2:1);
+    diffvec=diff(q);
+    eps=min(diffvec(diffvec~=0))/10;
+    q(1)=q(1)-eps;q(end)=q(end)+eps;
+    powerbins=q;
+    [~,powerindices]=histc(powervec,powerbins);
+    
+    v=zeros(Nb1*Nb2,1);
+    for i=1:N
+        ind=sub2ind([Nb1,Nb2],abilitiesindices(i),powerindices(i));
+        v(ind)=v(ind)+1;
+    end
+    keeptrackofinfoC(c,:)=v;
+    
+    skewvalsC(c)=skewness(powervec);
+    
     powervec=powervecprobs;
-    powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
-    powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+%     powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;
+%     powerbins=(floor(min(powervec))-.05):(powerdiff/Nb2):(ceil(max(powervec))+.05);
+    q=quantile(powervec,0:1/Nb2:1);
+    diffvec=diff(q);
+    eps=min(diffvec(diffvec~=0))/10;
+    q(1)=q(1)-eps;q(end)=q(end)+eps;
+    powerbins=q;
     [~,powerindices]=histc(powervec,powerbins);
     
     v=zeros(Nb1*Nb2,1);
@@ -269,9 +327,9 @@ for c=1:its
     
     skewvalsprobs(c)=skewness(powervec);
  
-        keepprobmat(c,:)=reshape(probmat,1,[]);
-        keeptimemat(c,:)=reshape(timemat,1,[]);
-        keepsigmat(c,:)=reshape(binsigmat,1,[]);
+    keepprobmat(c,:)=reshape(probmat,1,[]);
+    keeptimemat(c,:)=reshape(timemat,1,[]);
+    keepsigmat(c,:)=reshape(binsigmat,1,[]);
     
 end
 
@@ -280,6 +338,7 @@ keeptrackofinfoR=sum(keeptrackofinfoR,1);
 keeptrackofinfoDelta=sum(keeptrackofinfoDelta,1);
 keeptrackofinfoH=sum(keeptrackofinfoH,1);
 keeptrackofinfoPi=sum(keeptrackofinfoPi,1);
+keeptrackofinfoC=sum(keeptrackofinfoC,1);
 keeptrackofinfoprobs=sum(keeptrackofinfoprobs,1);
 
 for i=1:Nb1
@@ -315,17 +374,43 @@ end
 for i=1:Nb1
     for j=1:Nb2
         ind=sub2ind([Nb1,Nb2],i,j);
+        infomatC(i,j)=keeptrackofinfoC(ind);
+    end
+end
+for i=1:Nb1
+    for j=1:Nb2
+        ind=sub2ind([Nb1,Nb2],i,j);
         infomatprobs(i,j)=keeptrackofinfoprobs(ind);
     end
 end
 
-avgthresh=mean(finalthresh,2);
+% avgthresh=mean(finalthresh,2);
 
 probmat=reshape(keepprobmat(its,:),N,N);
 timemat=reshape(keeptimemat(its,:),N,N);
 binsigmat=reshape(keepsigmat(its,:),N,N);
 
+sigmat=binsigmat.*(max(max(timemat))+1-timemat);
+    
+todivide=sum(sigmat,2);
+todivide(todivide==0)=1;
+entmat=sigmat./repmat(todivide,1,N);
+logmat=entmat;
+logmat(entmat~=0)=-log(entmat(entmat~=0));
+entmat=entmat.*logmat;
+
+%         powervec=sum(probmat,2);
+powervecD=sum(binsigmat,2);
+powervecR=sum(sigmat,2);
+powervecDelta=(powervecD).*(powervecR);
+powervecH=sum(entmat,2);
+powervecH=real(powervecH);
+powervecPi=(powervecR).*(powervecH);
+powervecC=eigcentrality(sigmat,weight);
+powervecprobs=sum(probmat,2);
+
 pairwiseaccuracy=sum(pairwiseaccuracy)/its/(N*(N-1)/2);
+pairwisetime=sum(pairwisetime)/its/(N*(N-1)/2);
 
 groupmutinfoD=0;
 
@@ -365,6 +450,7 @@ for i=1:Nb1
         end
     end
 end
+
 groupmutinfoH=0;
 
 for i=1:Nb1
@@ -377,6 +463,7 @@ for i=1:Nb1
         end
     end
 end
+
 groupmutinfoPi=0;
 
 for i=1:Nb1
@@ -386,6 +473,19 @@ for i=1:Nb1
         pxy=infomatPi(i,j)/(N*its);
         if pxy~=0
             groupmutinfoPi=groupmutinfoPi+pxy*log(pxy/px/py);
+        end
+    end
+end
+
+groupmutinfoC=0;
+
+for i=1:Nb1
+    px=sum(infomatC(i,:))/(N*its);
+    for j=1:Nb2
+        py=sum(infomatC(:,j))/(N*its);
+        pxy=infomatC(i,j)/(N*its);
+        if pxy~=0
+            groupmutinfoC=groupmutinfoC+pxy*log(pxy/px/py);
         end
     end
 end
@@ -407,7 +507,8 @@ meanskewnessR=mean(skewvalsR);
 meanskewnessDelta=mean(skewvalsDelta);
 meanskewnessH=mean(skewvalsH);
 meanskewnessPi=mean(skewvalsPi);
+meanskewnessC=mean(skewvalsC);
 meanskewnessprobs=mean(skewvalsprobs);
 
-toreturn={[groupmutinfoD,groupmutinfoR,groupmutinfoDelta,groupmutinfoH,groupmutinfoPi,groupmutinfoprobs],[meanskewnessD,meanskewnessR,meanskewnessDelta,meanskewnessH,meanskewnessPi,meanskewnessprobs],pairwiseaccuracy};
+toreturn={[powervecD,powervecR,powervecDelta,powervecH,powervecPi,powervecC,powervecprobs],[groupmutinfoD,groupmutinfoR,groupmutinfoDelta,groupmutinfoH,groupmutinfoPi,groupmutinfoC,groupmutinfoprobs],[meanskewnessD,meanskewnessR,meanskewnessDelta,meanskewnessH,meanskewnessPi,meanskewnessC,meanskewnessprobs],pairwiseaccuracy,pairwisetime,{infomatD,infomatR,infomatDelta,infomatH,infomatPi,infomatC}};
 end
