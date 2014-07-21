@@ -52,6 +52,14 @@ Learning usually occurs in noisy environments.  In order to make a decision, one
 
 \section{Introduction}
 
+Collective computation
+
+decision making previously and why social systems are different
+
+specifically, how do monkey groups compute their power structure?
+
+the model, which extends neural models, reduces to game theory, and can be derived from first principles with only a few assumptions!  aren't we great?
+
 \subsection{Neural }
 Stochastic differential equations have been used to model, explain, and predict learning and decision making in both monkeys and humans \citep{Eckhoff:2008uq, Brown:2005fk,Feng:2009kl,Bogacz:2006uq}.  Typically, an experimental subject is presented with a visual stimulus that consists of dots, some percentage of which are moving coherently either left or right and the rest of which are moving randomly.  The subject is then asked to decide in which direction the dots were moving.  If there are two neural populations, each of which fire in response to a particular direction of motion, the firing rates of the two populations will tend to increase or decrease, depending on the strength and direction of the stimulus.  Eventually, either the experimenter forces a decision to be made, in which case whichever population has a higher firing rate determines which decision is made, or the firing rate of one population becomes high enough that the subject decides for that direction.  To summarize, there are two decision variables--- the firing rates of two neural populations responding to left and right motion--- that perform a biased random walk until enough evidence has been accumulated to make a decision one way or the other.
 
@@ -135,62 +143,93 @@ Since an individual is trying to use the same algorithm to learn about every oth
  We use the following procedure to find optimal thresholds as a function of position in the group.  We repeatedly draw a set of fighting abilities from a uniform distribution; we find the optimal thresholds for each set, and then find the average optimal threshold as a function of an animal's order in the set of fighting abilities. To find the optimal thresholds for a given set of fighting abilities, we turn the difference in fighting abilities between each pair into the difficulty of the decision they have to make ($c$).  For an initial set of thresholds, we find $U_{ij}$ for each animal $i$ in each of its decisions and then average $\langle U_{ij}\rangle_j$ across all the animals with which it is engaged in a decision process.  We then allow each animal to choose a threshold that optimizes $\langle U_{ij}\rangle_j$ with respect to the rest of the group's thresholds and we iterate these choices until no animal chooses a new threshold.  
 
 \subsection{Consensus }
-Consensus about the value of each individual in a group emerges out of the decision process.  In the social system, an animal's social power depends on the consensus in the group about its fighting ability \cite{Flack:2004oq,Flack:2006uq,Brush:2013fk}.  Given the decisions that each pair of individuals reaches, there are measures of the consensus in the group that successfully predict an animal's social power and also extend to other social systems \cite{Brush:2013fk}.  For each random set of fighting abilities, we let the animals optimize their thresholds, which give the probability that each pair will reach either decision, and we then generate a set of decisions given by these probabilities.  These decisions then give a distribution of power among the group.  For many random sets of fighting abilities, we can find the mutual information between the power distribution and the true fighting abilities, which we call the information content of the power distribution. It tells us how informative observing the outcomes of the decisions is about the underlying fighting abilities.  We also find the average skewness of the power distributions.
+Consensus about the value of each individual in a group emerges out of the decision process.  In the social system, an animal's social power depends on the consensus in the group about its fighting ability \cite{Flack:2004oq,Flack:2006uq,Brush:2013fk}.  Given the decisions that each pair of individuals reaches, there are measures of the consensus in the group that successfully predict an animal's social power and also extend to other social systems \cite{Brush:2013fk}.  For each random set of fighting abilities, we let the animals optimize their thresholds, which give the probability that each pair will reach either decision, and we then generate a set of decisions given by these probabilities.  Given this signaling network, we use various formalisms to measure the consensus about each node in the network, i.e. a power score for each animal in the group.  For many random sets of fighting abilities, we can find the mutual information between the power score and the true fighting abilities. This tells us how informative observing the outcomes of the decisions is about the underlying fighting abilities.  We also find the average skewness of the power distributions.
+
+In the following we consider four types of consensus formalisms.  The first and simplest is simply the number of signalers submitting to each animal.  The second is the entropy of the distribution of the number of signals sent to each animal, which measures how uniformly all other animals in the group behave with respect to a focal animal.  The third is the eigenvector centrality of the signaling network, which measures how central each node is in the global structure of the network.  Finally, there are a number of ways to Incorporate the number of signals received into a measure of power, including just counting that number or multiplying that number by the entropy.  However, these measures all perform very similarly with respect to how informative they are so we group them together in the following analysis.  For more details see \cite{Brush:2013fk}.  
 
 \section{Results}
 
 \subsection{Decisions are as accurate without an arbiter. }
-We compare the decision making process in the full two-dimensional system and in a reduced one-dimensional system to see whether decisions are made more accurately or quickly in one or the other.  To make the systems directly comparable, we assume in both cases that the thresholds are symmetric, i.e. $T_1=T_2$.  We find that the two-dimensional decision is as accurate as the one-dimensional decision.  That is, for a given expected time to reach a decision, the two-dimensional decision will reach the correct decision with the same probability.  Accuracy decreases as leak rates ($\ell$) become higher, but increases when the strength of the input ($c$) is higher (Figure \ref{2dacc}).
+We compare the decision making process in the full two-dimensional system and in a reduced one-dimensional system to see whether decisions are made more accurately or quickly in one or the other.  To make the systems directly comparable, we assume in both cases that the thresholds are symmetric, i.e. $T_1=T_2$.  We find that the two-dimensional decision is as accurate as the one-dimensional decision.  That is, for a given expected time to reach a decision, the two-dimensional decision will reach the correct decision with the same probability.  Accuracy decreases as leak rates ($\ell$) become higher, but increases when the strength of the input ($c$) is higher.
 
-Without any prior knowledge of the probabilities of the state of the external stimulus, it is reasonable to assume that the thresholds for deciding for each direction are symmetric.  On the other hand, the thresholds are chosen by two competing individuals-- neural populations or animals-- and it is possible that the two individuals have different thresholds.  The accuracy in a given amount of time depends on the ratio of the two thresholds and is improved when the weaker animal's threshold is lower than the stronger animal's threshold (Figure \ref{2dflex}).  
+\subsection{Prioritizing signaling probability does not always decrease pairwise decision accuracy. }
+We first look at the Nash equilibrium thresholds when the animals only care about one property of the decision (error rate, signaling property, or decision time).  In these extremes, the Nash thresholds do not depend on how difficult the decision is. The pair can make the most accurate decision if the weaker animal chooses a low threshold and the strong animal chooses a high one, so if only error rate matters ($w_1=1$, $w_2=0$, $w_3=0$), those will be the Nash  thresholds.   If only signaling probability matters ($w_1=0$, $w_2=0$, $w_3=1$), there is no incentive for the individuals to stop accumulating evidence (fighting, in the social case) so both individuals wait until the other gives up and the Nash  thresholds are both high.  If only decision time matters ($w_1=0$, $w_2=1$, $w_3=1$), both animals have an incentive to set their thresholds low and reach a decision quickly, whatever that decision may be (Figure \ref{nasheq_thresholds}).   Notice that in changing from prioritizing signaling probability ($w_3=1$) to prioritizing decision time ($w_2=1$), first the weaker animal lowers its threshold and \emph{then} the stronger animal lowers his.  
 
-\subsection{Increasing waiting costs make easy decisions take longer. }
+For intermediate optimization weights, the Nash  thresholds depend on the difficulty of the decision being made.  The Nash thresholds for two animals making a difficult decision ($c$ close to $.5$) are more similar to each other than those for two animals making an easy decision.  For a pair making a difficult decision, their similar Nash thresholds decrease as waiting costs become more important (Figure \ref{nasheq_thresholds}).  Once waiting costs are sufficiently high, the tradeoff between error rate and signaling probability does not affect the Nash thresholds.
 
-If waiting is not costly and the error rate does not matter ($w_1=0$, $w_2=0$, $w_3=1$), there is no incentive for the individuals to stop accumulating evidence (fighting, in the social case) so the Nash equilibrium thresholds are high and both individuals wait until the other gives up.  However, as waiting costs increase, the pair can reach a decision more quickly if the weaker individual lowers its threshold.  If waiting costs are high enough, the stronger individual will also lower its threshold to avoid a long decision time (Figure \ref{nasheq_thresholds}).  Pairs making difficult decisions make more accurate decisions when the costs of waiting are higher since the weaker animal has an incentive to give up more quickly (Figure \ref{nasheq_thresholds}).  For low waiting costs, pairs of individuals making a difficult decision (low $c$, e.g. animals with similar fighting abilities) will take longer to reach a decision than pairs making a difficult decision (high $c$, e.g. animals with disparate fighting abilities).  At intermediate costs, pairs of individuals making intermediate decisions will take the longest to reach a decision.  When costs are high, the pairs that take the longest to reach a decision are those making the easiest decisions (Figure \ref{nasheq_thresholds}).  
+The thresholds affect the accuracy and decision time with which a pair can reach a decision.  For a difficult decision ($c$ close to $.5$), the accuracy with which a pair using Nash thresholds can reach a decision is highest when only error rate matters ($w_1=1$) and lowest when only signaling probability matters ($w_3=1$).  Accuracy decreases as the weight given to decision time increases (Figure \ref{nasheq_thresholds}).  Since, for sufficiently high waiting costs, the Nash thresholds do not depend on the tradeoff between error rate and signaling probability, neither does the accuracy for a pair using Nash thresholds.  In other words, once waiting costs are high, a pair of animals each minimizing error rate and a pair minimizing signaling probability will reach a decision with the same accuracy.
 
-As with the Nash equilibrium thresholds, if waiting is not costly and the error rate does not matter ($w_1=0$, $w_2=0$, $w_3=1$), there is no incentive for the individuals to stop accumulating evidence (fighting, in the social case) so they will all set high thresholds.  As waiting costs increase, first weaker animals will start to lower their thresholds and then strong animals will as well (Figure \ref{groupeq_thresholds}).  For low waiting costs, pairs of animals with similar fighting abilities, and thus making difficult decisions, take the longest to reach a decision.  For high waiting costs, pairs of animals with similar and high fighting abilities take much longer, and those animals with similar and low fighting abilities will reach a decision more quickly.
 
-\subsection{Costs affect the shape and the information content of the power distribution.  }
+\subsection{Intermediately difficult decisions sometimes take the longest. }
 
-The average skewness of the power distribution is maximized at intermediate waiting costs ($w_2$) (Figure \ref{power}). Changing $w_1$ and $w_3$ have less of an effect, although when $w_1$ is higher the skewness slightly increases. The information content decreases as waiting costs increase.  Counterintuitively, if the individuals maximize the probability of being dominant in each of its pairs rather than the accuracy of those decisions, the information content of the power distribution increases (Figure \ref{power}).  In other words, the information in all of the group's decisions is higher when the accuracy of pairwise decisions decreases.
+For most optimization weights, it takes more time to make a difficult decision than to make an easy one.  However, at intermediate costs, pairs of individuals making intermediate decisions will take the longest to reach a decision.  An easy decision can always be reached quickly.  Higher waiting costs incentivize pairs making difficult decisions to lower their thresholds more than pairs making intermediately difficult decisions, with the result that they can actually reach a decision more quickly.  It is the pairs making intermediately difficult decisions using intermediate thresholds that will take the longest in this case (Figure \ref{nasheq_thresholds}). 
 
-\subsection{Comparison to social data }
-Empirically, those pairs of monkeys that take the longest to establish a signaling dynamics are those with the most similar fighting abilities...
+
+\subsection{Decisions in a group context take longest between animals with similarly high abilities. }
+
+After analyzing Nash equilibrium thresholds between pairs of animals, we found the optimal thresholds for a group of animals ($N=20$) such that no animal had an incentive to choose a different threshold.  As with pairwise Nash thresholds, when the animals only care about signaling probability ($w_3=1$), all animals in the group choose high thresholds, whereas if they only care about decision time ($w_2=1$), all animals choose low thresholds.  When the animals only care about accuracy ($w_1=1$), all animals choose high thresholds, except the weakest who choose a low threshold.  At intermediate weights, thresholds decrease as position in the group decreases (Figure \ref{groupeq_thresholds}).
+
+When waiting costs are low, the pairs that take the longest to reach a decision are those with similar fighting abilities, but pairs with less similar abilities also take a fairly long time.  When waiting costs are high, most pairs can reach a decision quite quickly, except those who have similar and high abilities (Figure \ref{groupeq_thresholds}).  The average accuracy decreases as waiting costs increase (Figure \ref{groupeq_thresholds}).  
+
+As soon as any waiting costs are introduced, as with the pairwise Nash thresholds, the weaker animals have incentives to lower their thresholds to make quicker decisions at the expense of accuracy.  This incentive is stronger when error rate is more important than signaling probability.  The result is that all the weakest animals set their thresholds as low as possible, making the accuracy of decisions between those animals very poor and decreasing the overall accuracy of the group. In other words, average accuracy \emph{increases} as signaling probability is prioritized over error rate, except when there are no waiting costs (Figure \ref{groupeq_thresholds}). The mutual information of any measure of consensus in the signaling network increases (more or less) with accuracy so it too increases as signaling probability becomes more important.  
+
+\subsection{The skewness of the power distribution is maximized at intermediate waiting costs.  }
+For each measure of consensus in the signaling network, we find the average skewness of the distribution of power scores of a group using optimal thresholds, as they depend on optimization weight.  We find that for all measures skewness is maximized at intermediate waiting costs and does not depend strongly on the tradeoff between error rate and signaling probability (Figure \ref{skewness}). (Results for number of signalers are shown in Figure \ref{skewness} and others are similar).  When waiting costs are low and accuracy is high, the signals accurately represent the animals' true fighting abilities so the distribution of number of signalers accurately represents the distribution of abilities, which is not very right-skewed.  When waiting costs are high and accuracy is low, all animals receive signals from a similar number of others, giving a distribution that is quite uniform and not right-skewed.  At intermediate waiting costs, the signals sent to animals with low to middle abilities are very noisy so that the animals in the bottom and middle of the group receive signals from similar numbers of animals.  However, the group accurately signals to the top couple of animals, giving them high scores, resulting in a right-skewed distribution. 
+
+\subsection{Which measure of consensus is most informative depends on how accurate pairwise decisions are. }
+We consider four types of measures of consensus in the signaling network to evaluate which is most informative about the underlying fighting abilities.  When pairwise decisions are quite accurate, the number of signals received is the most informative about the underlying fighting ability (Figure \ref{bestmetric}).  This makes sense since when each signal accurately reflects the different in ability between receiver and sender, the number of signals is informative about an animal's position in the group.  When the pairwise decisions are less accurate, global structure of the signaling network provides information about ability that the individual relationships do not, so eigenvector centrality is the measure that is the most informative about ability.  
+
+The number of signalers consistently overestimates animals' ability.  When accuracy is fairly high, this bias makes it uninformative about ability.  However, when accuracy is quite low, this consistent bias actually make the number of signalers more informative than measures that both underestimate and overestimate ability. When accuracy is lower still, none of the measures are very informative, but entropy correctly gives the lowest animals low scores, giving it an edge over the other measures.
 
 \section{Discussion}
+what's interesting and exciting and new?
+
+we can derive sde's from first principles
+
+prioritizing signaling probability sometimes makes decision more accurate
+
+prioritizing waiting costs change which decisions take the longest
+
+optimization weights change the overall social structure
+
+
+
+extension of neural model by removing third party comparison and allow individuals to minimize signaling probability
+
+extension of game theory by introducing heterogeneous abilities
+
+extension of David's paper
+
+explanation for variation across species of macaque
+
+evolutionary implications
+
+%comparison to social data
+Empirically, those pairs of monkeys that take the longest to establish a signaling dynamics are those with the most similar fighting abilities...
+
+skewness
+they're using eigenvector centrality
 
 \begin{figure}[ht]
-\includegraphics[width=\textwidth]{2d_accuracy.pdf}
-\caption{\label{2dacc} }
+\includegraphics[width=\textwidth]{/Users/eleanorbrush/Desktop/pairwise_accuracy.pdf}
+\includegraphics[width=\textwidth]{/Users/eleanorbrush/Desktop/nasheq_thresholds.pdf}
+\caption{\label{nasheq_thresholds}  The accuracy of a pair using Nash equilibrium thresholds decreases as the weight given to decision time increases.  (a) In the upper panel, the color indicates the accuracy of a decision made by a pair making a difficult decision ($c=.55$) using Nash equilibrium thresholds, as a function of the optimization weights, $w_1$, $w_2$, $w_3$.  In the lower left corner of the simplex, only error rate matters ($w_1=1$).  In the upper corner, only decision time matters ($w_2=1$).  In the lower right corner, only signaling probability matters ($w_3=1$). Accuracy decreases as $w_2$ increases but is not greatly affected by a tradeoff between $w_1$ and $w_3$. In (b)-(g) we show how the Nash equilibrium thresholds (top row) and decision time for a pair using those thresholds (bottom row) depends on the difficulty of the decision ($c$). The optimization weights for each panel are indicated in the simplex with the corresponding letter.  At intermediate waiting costs (f), intermediately difficult decision take the longest.}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{/Users/eleanorbrush/Desktop/groupaccuracy_heatmap.pdf}
+\includegraphics[width=\textwidth]{/Users/eleanorbrush/Desktop/groupeq_thresholds.pdf}
+\caption{\label{groupeq_thresholds}   The accuracy of a group using optimal thresholds decreases as the weight given to decision time increases.  In the upper panels, the color indicates the average accuracy of the decisions between individuals in the bottom quartile (a) and the average accuracy of the whole group (b) using optimal thresholds, as a function of the optimization weights, $w_1$, $w_2$, $w_3$.  In the lower left corner of the simplex, only error rate matters ($w_1=1$).  In the upper corner, only decision time matters ($w_2=1$).  In the lower right corner, only signaling probability matters ($w_3=1$). Both bottom-quartile and total accuracy decrease as $w_2$ increases, and the increase in bottom-quartile accuracy as $w_3$ increases drives a slight increase in total accuracy.  In (c)-(h) we show how the group-context optimal thresholds (top row) and decision time for each pair (bottom row) depends on the true order of ability where $1$ is the strongest animal and $20$ is the weakest. The optimization weights for each panel are indicated in the simplex with the corresponding letter.  For low waiting costs (c and d), it takes longest for pairs with similar ability to reach a decision.  For slightly higher waiting costs (f and g), it takes longer for pairs with similar and high ability to reach a decision.}
 \end{figure}
 
 \begin{figure}[ht]
-\includegraphics[width=\textwidth]{2d_flexible_thresholds.pdf}
-\caption{\label{2dflex} When the two thresholds in the two-dimensional system are allowed to vary freely, the decision process can be arbitrarily accurate in a given amount of time, depending on how much lower the weaker animal's threshold is than the stronger animal's threshold.  The expected time to reach a decision is on the x-axis and the probability of reaching the correct decision in that amount of time is on the y-axis.  The curve depends on the ratio of the weaker animal's threshold to the stronger animal's threshold ($\rho$).  Lower ratios are represented in higher darker curves.}
+\includegraphics[width=\textwidth]{/Users/eleanorbrush/Desktop/skewness_heatmap.pdf}
+\caption{\label{skewness} The skewness of the distribution of the number of signalers is maximized at intermediate waiting costs. In the lower left corner of the simplex, only error rate matters ($w_1=1$).  In the upper corner, only decision time matters ($w_2=1$).  In the lower right corner, only signaling probability matters ($w_3=1$).}
 \end{figure}
 
 \begin{figure}[ht]
-\includegraphics[width=\textwidth]{nasheq_thresholds.pdf}
-\caption{\label{nasheq_thresholds} If a pair of individuals optimize their thresholds in response to each other, as the costs of waiting increase, first the weaker individual will start to lower his threshold to avoid waiting for a long time and then the stronger individual will start to lower his threshold as well.  As the costs of waiting increase, first the accuracy with which a pair can make a difficult decision increases and then it decreases.  At low waiting costs, difficult decisions take the most time.  At intermediate costs, intermediate decisions take the most time.  At high costs, easy decisions take the most time. The first row of panels shows the Nash equilibrium thresholds as a function of the difficulty of the decision ($c$ close to $.5$ is a more difficult decision).  The second and third rows show, respectively, the probability of the pair reaching the correct decision and the expected time until a decision is reached, if the pair of individuals uses the Nash equilibrium thresholds.  Each column corresponds to a particular waiting cost and the cost increases from left to right ($w_1=0, w_3=1-w_2$).  }
-\end{figure}
-
-\begin{figure}[ht]
-\includegraphics[width=\textwidth]{groupeq_thresholds.pdf}
-\caption{\label{groupeq_thresholds} If the animals optimize their thresholds with respect to the thresholds and fighting abilities of the whole group of animals, as the costs of fighting increase, first the weaker animals in the group lower their thresholds to avoid fighting for a long time with the stronger animals and then the stronger animals lower their thresholds as well.  The ability of to learn from an animal's signaling behavior decreases as the costs of fighting increase. When fighting is not costly, the pairs of animals that take longest to decide on a relationship are those with similar fighting abilities. As costs increase pairs of animals with similarly low fighting abilities resolve their relationships quickly, whereas pairs of animals with similarly high fighting abilities take a long time to resolve their relationships.  The first row of panels shows the optimal threshold as a function of the animal's true rank with respect to fighting ability.  The second row shows the mutual information between the probability of emitting a signal and the probability of being the weaker animal, as a function of the animal's true rank.  The third row shows the expected time until each pair of animals resolves their relationship.  Each column corresponds to a particular waiting cost and the cost increases from left to right ($w_1=0, w_3=1-w_2$).   }
-\end{figure}
-
-\begin{figure}[ht]
-\begin{subfigure}{3.415in}
-\caption{}
-\includegraphics[width=\textwidth]{skewness_heatmap_poster.pdf}
-\end{subfigure}
-\begin{subfigure}{3.415in}
-\caption{}
-\includegraphics[width=\textwidth]{mutinfo_heatmap_poster.pdf}
-\end{subfigure}
-\caption{\label{power} Average skewness of the power distribution is maximized at intermediate waiting costs. The information content of the power distribution always increases as waiting costs decrease and when the benefits of being dominant increase.  The simplex shows the possible combinations of priorities, $w_1$, $w_2$, and $w_3$ such that the three weights sum to $1$.  In the lower left corner, $w_1=1$ (only accuracy matters), in the upper corner $w_2=1$ (only waiting time matters), and in the lower right $w_3=1$ (only the probability of receiving the signal matters).  The heatmaps show (a) the skewness of the power distribution and (b) the mutual information of the power distribution when the animals in the group optimize their thresholds according to those weights.  
-%Increasing or decreasing $c_2$ has the strongest effect.  Increasing $c_1$ slightly increases the skewness. 
-}
+\includegraphics[width=\textwidth]{/Users/eleanorbrush/Desktop/mostinformative_heatmap.pdf}
+\caption{\label{bestmetric}  Which measure of consensus is most informative about fighting ability depends on how accurate decision are on average.  When decision are very accurate or very inaccurate, measures of the number of signals received are most informative.  When accuracy is slightly lower, eigenvector centrality of the signaling network is most informative.  When accuracy is slightly lower again, the number of signalers is most informative.  When accuracy is lower still, the entropy of signals received is most informative.  In the lower left corner of the simplex, only error rate matters ($w_1=1$).  In the upper corner, only decision time matters ($w_2=1$).  In the lower right corner, only signaling probability matters ($w_3=1$).}
 \end{figure}
 
 \begin{table}[ht]
@@ -221,15 +260,12 @@ Variable & Interpretation & Neural &   Social \\
 dimensionality & $1$  && $2$
 \\decision & difference hits a threshold  && \fcolorbox{red}{white}{one var. hits a threshold}
 \\ optimality criterion &  reward from being ``right" && reward from being ``right"
-\\ & reward rate && reward rate
-\\ & Bayes risk && Bayes risk
+\\ & decision time && decision time
 \\ & && \fcolorbox{red}{white}{reward from  receiving signal}
 \\optimization depends on & input strength && input strength
 \\ & noise && noise
 \\ & leak rate && leak rate
 \\ & && \fcolorbox{red}{white}{other animal's threshold}
-\\threshold  algorithm & error correction
-\\  & hill climbing
 \end{tabular}
 \end{table}
 
