@@ -1,7 +1,7 @@
 
 %%
-its=10;
-N=30;
+opt_its=10;
+N=10;
 
 fighting_abilities=20*rand(1,N);
 % fighting_abilities=normrnd(0,10,1,N);
@@ -23,7 +23,7 @@ for i=1:N
 end
 
 c1=0;
-c2=1;
+c2=.1;
 c3=1;
 
 %twomat=zeros(Nl,Nd,Nt,Nt,2);
@@ -39,10 +39,10 @@ perf(2,:,1,:,:)=c2*(twomat(:,1,:,:,2))+c3*(twomat(:,1,:,:,1));
 %%
 l=2;
 
-Tvals=zeros(N,its);
-Tvals(:,1)=ones(N,1);
+Tvals=zeros(N,opt_its);
+Tvals(:,1)=2*ones(N,1);
 % Tvals(:,1)=randi([1 Nt],N,1);
-perfvals=zeros(N,its);
+perfvals=zeros(N,opt_its);
 
 for i=1:N
     opp_thresh=Tvals([1:(i-1),(i+1):N],1);
@@ -59,7 +59,7 @@ for i=1:N
 end
 
 count=1;
-while count<=its
+while count<=opt_its
     for i=1:N
         opp_thresh=Tvals([1:(i-1),(i+1):N],count);
         ds=dmat(i,[1:(i-1),(i+1):N]);
@@ -81,7 +81,7 @@ while count<=its
     end
     if sum(Tvals(:,count+1)==Tvals(:,count))==N
         maxit=count+2;
-        count=its+1;
+        count=opt_its+1;
     end
     count=count+1;
 end
@@ -119,7 +119,8 @@ imagesc(timemat)
 colorbar
 
 subplot(2,2,3)
-hist(Tvals(:,end))
+% hist(Tvals(:,end))
+hist(sum(probmat,2))
 
 subplot(2,2,4)
 plot(fighting_abilities,sum(probmat,2))

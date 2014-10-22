@@ -8,6 +8,7 @@ ticklength=[.02,.0250];
 markersz=5;
 markercol='white';
 fontname='Times New Roman';
+cornerlabels={'ER','SP','DT'};
 
 %%
 its=1000;
@@ -32,199 +33,93 @@ transformed=transform([X',Z',Y']);
 
 %%
 l=length(X);
-skewvals=zeros(6,l);
-mutvals=zeros(6 ,l);
+expowervecs=zeros(N,7,l);
+skewvals=zeros(7,l);
+mutvals=zeros(7 ,l);
 accuracy=zeros(1,l);
+time=zeros(1,l);
 
 for i=1:l
     c1=X(i);
     c2=Y(i);
     c3=Z(i);
     t=group_props_parallelized(c1,c2,c3,its,N,'unif',Nd,Nt,twomat,domvals,threshvals);
-    mutvals(:,i)=t{1};
-    skewvals(:,i)=t{2};
-    accuracy(i)=t{3};
+    expowervecs(:,:,i)=t{1};
+    mutvals(:,i)=t{2};
+    skewvals(:,i)=t{3};
+    accuracy(i)=t{4};
+    time(i)=t{5};
 end
+
+%%
+filename='triangle_heatmap_output.mat';
+save(filename,'skewvals','mutvals','accuracy','time');
 %%
 scaledskewvals=skewvals-(repmat(min(skewvals')',1,l));
 scaledskewvals=scaledskewvals./repmat(max(scaledskewvals')',1,l);
 
-scaledmutvals=mutvals-(repmat(min(mutvals')',1,l));
-scaledmutvals=scaledmutvals./repmat(max(scaledmutvals')',1,l);
+% scaledmutvals=mutvals-(repmat(min(mutvals')',1,l));
+% scaledmutvals=scaledmutvals./repmat(max(scaledmutvals')',1,l);
+scaledmutvals=mutvals-min(min(mutvals));
+scaledmutvals=scaledmutvals/max(max(scaledmutvals));
+
+[~,order]=sort(mutvals(1:6,:));
+bestfun=order(6,:);
+scaledbestfun=bestfun-min(min(bestfun));
+scaledbestfun=scaledbestfun/max(max(scaledbestfun));
+
+[~,order]=sort(skewvals(1:6,:));
+mostskewed=order(6,:);
+scaledmostskewed=mostskewed-min(min(mostskewed));
+scaledmostskewed=scaledmostskewed/max(max(scaledmostskewed));
 
 scaledaccuracy=accuracy-min(accuracy);
 scaledaccuracy=scaledaccuracy/max(scaledaccuracy);
+
+scaledtime=time-min(time);
+scaledtime=scaledtime/max(scaledtime);
+
+mutvalstopc=mutvals(1:6,:)-repmat(mean(mutvals(1:6,:)),6,1);
+mutvalstopc=mutvalstopc./repmat(power(var(mutvalstopc),.5),6,1);
+
+[coeff,score,latent]=princomp(mutvalstopc');
+coeff=coeff(:,1:2);
+score=score(:,1:2);
+score=score';
+scaledscore=score-repmat(min(score')',1,l);
+scaledscore=scaledscore./repmat(max(score')',1,l);
 %%
-textfontsz=20;
-labfontsz=15;
-figure
-set(gcf,'Color','w')
-marg=[.0,.055];
-set(gcf,'PaperUnits','inches')
-v=get(gcf,'Position');
-ratio=v(4)/v(3);
-w=6.83;
-h=w*ratio;
-
-c=colormap;
-spaced=linspace(0,1,size(c,1));
-l=size(transformed,1);
-
-xoffset=.25;
-yoffset=.2;
-
-numfun=6;
-
-hold on
-axis off
-axis equal
-
-for i=1:l
-    p=transformed(i,:);
-    mutnow=scaledmutvals(numfun,i);
-    ind=sum(spaced<=mutnow);
-    if ind==size(c,1)
-        mutcol=c(end,:);
-    else
-        mutcol=c(ind,:)+(mutnow-spaced(ind))/(spaced(ind+1)-spaced(ind))*(c(ind+1,:)-c(ind,:));
-    end
-    fill([p(1),p(1)+cstep,p(1)+cstep,p(1),p(1)-cstep,p(1)-cstep],[p(2)-2/sqrt(3)*cstep,p(2)-1/sqrt(3)*cstep,p(2)+1/sqrt(3)*cstep,p(2)+2/sqrt(3)*cstep,p(2)+1/sqrt(3)*cstep,p(2)-1/sqrt(3)*cstep],mutcol,'EdgeColor','none');
+for i=1:6
+numfun=i;
+mainlabel='Mutual information';
+triimage(scaledmutvals(numfun,:),mutvals(numfun,:),transformed,cornerlabels,mainlabel)
 end
-
-text(0-xoffset,-yoffset,'Accuracy','Color','k','HorizontalAlignment','left','FontSize',textfontsz)
-text(2+xoffset,-yoffset,'Dominance','Color','k','HorizontalAlignment','right','FontSize',textfontsz)
-text(1,sqrt(3)+yoffset,'Time','HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
-% text(0,sqrt(3),'MUTUAL','HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
-% text(0,sqrt(3)-yoffset,'INFORMATION','HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
-
-    
-mybar=colorbar;
-tickvec=0:.2:1;
-ticklabvec=tickvec*(max(mutvals(numfun,:))-min(mutvals(numfun,:)))+min(mutvals(numfun,:));
-ticklabvec=round(ticklabvec*10)/10;
-set(mybar,'YTick',tickvec,'YTickLabel',ticklabvec,'FontSize',labfontsz)
-yl=get(mybar,'YLabel');
-v=get(yl,'Position');
-set(yl,'String','Mutual information','FontSize',textfontsz,'Rotation',270,'Position',v+[3 0 0])
-
-set(gcf,'PaperSize',[w h]);
-set(gcf,'PaperPosition',[-w/10 -h/50 1.1*w 1.05*h]);
-
-filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','mutinfo_heatmap','.pdf');
+% filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','mutinfo_heatmap','.pdf');
 % print(filename,'-dpdf','-r300');
 
 %%
-textfontsz=20;
-labfontsz=15;
-figure
-set(gcf,'Color','w')
-marg=[.0,.055];
-set(gcf,'PaperUnits','inches')
-v=get(gcf,'Position');
-ratio=v(4)/v(3);
-w=6.83;
-h=w*ratio;
-
-c=colormap;
-spaced=linspace(0,1,size(c,1));
-l=size(transformed,1);
-
-xoffset=.25;
-yoffset=.2;
-
-numfun=6;
-
-hold on
-axis off
-axis equal
-
-for i=1:l
-    p=transformed(i,:);
-    skewnow=scaledskewvals(numfun,i);
-    ind=sum(spaced<=skewnow);
-    if ind==size(c,1)
-        skewcol=c(end,:);
-    else
-        skewcol=c(ind,:)+(skewnow-spaced(ind))/(spaced(ind+1)-spaced(ind))*(c(ind+1,:)-c(ind,:));
-    end
-    fill([p(1),p(1)+cstep,p(1)+cstep,p(1),p(1)-cstep,p(1)-cstep],[p(2)-2/sqrt(3)*cstep,p(2)-1/sqrt(3)*cstep,p(2)+1/sqrt(3)*cstep,p(2)+2/sqrt(3)*cstep,p(2)+1/sqrt(3)*cstep,p(2)-1/sqrt(3)*cstep],skewcol,'EdgeColor','none');
+for i=6:6
+numfun=i;
+mainlabel='Skewness';
+triimage(scaledskewvals(numfun,:),skewvals(numfun,:),transformed,cornerlabels,mainlabel)
 end
 
-text(0-xoffset,-yoffset,'Accuracy','Color','k','HorizontalAlignment','left','FontSize',textfontsz)
-text(2+xoffset,-yoffset,'Dominance','Color','k','HorizontalAlignment','right','FontSize',textfontsz)
-text(1,sqrt(3)+yoffset,'Time','HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
-% text(0,sqrt(3),'MUTUAL','HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
-% text(0,sqrt(3)-yoffset,'INFORMATION','HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
-
-    
-mybar=colorbar;
-tickvec=0:.2:1;
-ticklabvec=tickvec*(max(skewvals(numfun,:))-min(skewvals(numfun,:)))+min(skewvals(numfun,:));
-ticklabvec=round(ticklabvec*10)/10;
-set(mybar,'YTick',tickvec,'YTickLabel',ticklabvec,'FontSize',labfontsz)
-yl=get(mybar,'YLabel');
-v=get(yl,'Position');
-set(yl,'String','Skewness','FontSize',textfontsz,'Rotation',270,'Position',v+[3 0 0])
-
-set(gcf,'PaperSize',[w h]);
-set(gcf,'PaperPosition',[-w/10 -h/50 1.1*w 1.05*h]);
-
-filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','skewness_heatmap','.pdf');
+% filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','skewness_heatmap','.pdf');
 % print(filename,'-dpdf','-r300');
 
 %%
-textfontsz=20;
-labfontsz=15;
-figure
-set(gcf,'Color','w')
-marg=[.0,.055];
-set(gcf,'PaperUnits','inches')
-v=get(gcf,'Position');
-ratio=v(4)/v(3);
-w=6.83;
-h=w*ratio;
-
-c=colormap;
-spaced=linspace(0,1,size(c,1));
-l=size(transformed,1);
-
-xoffset=.25;
-yoffset=.2;
-
-hold on
-axis off
-axis equal
-
-for i=1:l
-    p=transformed(i,:);
-    accnow=scaledaccuracy(i);
-    ind=sum(spaced<=accnow);
-    if ind==size(c,1)
-        acccol=c(end,:);
-    else
-        acccol=c(ind,:)+(accnow-spaced(ind))/(spaced(ind+1)-spaced(ind))*(c(ind+1,:)-c(ind,:));
-    end
-    fill([p(1),p(1)+cstep,p(1)+cstep,p(1),p(1)-cstep,p(1)-cstep],[p(2)-2/sqrt(3)*cstep,p(2)-1/sqrt(3)*cstep,p(2)+1/sqrt(3)*cstep,p(2)+2/sqrt(3)*cstep,p(2)+1/sqrt(3)*cstep,p(2)-1/sqrt(3)*cstep],acccol,'EdgeColor','none');
-end
-
-text(0-xoffset,-yoffset,'Accuracy','Color','k','HorizontalAlignment','left','FontSize',textfontsz)
-text(2+xoffset,-yoffset,'Dominance','Color','k','HorizontalAlignment','right','FontSize',textfontsz)
-text(1,sqrt(3)+yoffset,'Time','HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
-% text(0,sqrt(3),'MUTUAL','HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
-% text(0,sqrt(3)-yoffset,'INFORMATION','HorizontalAlignment','center','Color','k','Clipping','off','FontSize',textfontsz)
-
-    
-mybar=colorbar;
-tickvec=0:.2:1;
-ticklabvec=tickvec*(max(accuracy)-min(accuracy))+min(accuracy);
-ticklabvec=round(ticklabvec*10)/10;
-set(mybar,'YTick',tickvec,'YTickLabel',ticklabvec,'FontSize',labfontsz)
-yl=get(mybar,'YLabel');
-v=get(yl,'Position');
-set(yl,'String','Accuracy','FontSize',textfontsz,'Rotation',270,'Position',v+[3 0 0])
-
-set(gcf,'PaperSize',[w h]);
-set(gcf,'PaperPosition',[-w/10 -h/50 1.1*w 1.05*h]);
+mainlabel='Accuracy';
+triimage(scaledaccuracy,accuracy,transformed,cornerlabels,mainlabel)
 
 filename=strcat('/Users/eleanorbrush/Dropbox/signaling_network/','accuracy_heatmap','.pdf');
 % print(filename,'-dpdf','-r300');
+%%
+mainlabel='Best power formalism';
+triimage(scaledbestfun,bestfun,transformed,cornerlabels,mainlabel,'off');
+
+%%
+mainlabel='Most skewed power formalism';
+triimage(scaledmostskewed,mostskewed,transformed,cornerlabels,mainlabel);
+
+%%
+triimage(scaledscore(2,:),score(2,:),transformed,cornerlabels,mainlabel);

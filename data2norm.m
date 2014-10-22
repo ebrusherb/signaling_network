@@ -1,0 +1,14 @@
+function [normx,normy]=data2norm(x,y)
+hAxes=gca;
+x=[x,x];
+y=[y,y];
+scribepin = scribe.scribepin('parent',hAxes,'DataAxes',hAxes,'DataPosition',[x;y;[0,0]]');
+figPixelPos = scribepin.topixels;
+hFig = ancestor(hAxes,'figure');
+figPos = getpixelposition(hFig);
+figPixelPos(:,2) = figPos(4) - figPixelPos([2,1],2);
+figNormPos = hgconvertunits(hFig,[figPixelPos(1,1:2),diff(figPixelPos)],'pixels','norm',hFig);
+annotationX = figNormPos([1,1]);
+annotationY = figNormPos([2,2]) + figNormPos(4)*[1,0];
+normx=annotationX(1);
+normy=annotationY(1);

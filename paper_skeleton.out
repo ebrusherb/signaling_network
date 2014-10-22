@@ -1,0 +1,19 @@
+\BOOKMARK [1][-]{section.1}{Abstract}{}
+\BOOKMARK [1][-]{section.2}{Introduction}{}
+\BOOKMARK [2][-]{subsection.2.1}{Neural }{section.2}
+\BOOKMARK [2][-]{subsection.2.2}{Social }{section.2}
+\BOOKMARK [1][-]{section.3}{The model }{}
+\BOOKMARK [2][-]{subsection.3.1}{Stochastic differential equations }{section.3}
+\BOOKMARK [2][-]{subsection.3.2}{Reaching a decision }{section.3}
+\BOOKMARK [2][-]{subsection.3.3}{Utility of the decision }{section.3}
+\BOOKMARK [2][-]{subsection.3.4}{Optimal thresholds }{section.3}
+\BOOKMARK [2][-]{subsection.3.5}{Consensus }{section.3}
+\BOOKMARK [1][-]{section.4}{Results}{}
+\BOOKMARK [2][-]{subsection.4.1}{Decisions are as accurate without an arbiter. }{section.4}
+\BOOKMARK [2][-]{subsection.4.2}{Prioritizing signaling probability does not always decrease pairwise decision accuracy. Intermediately difficult decisions sometimes take the longest. }{section.4}
+\BOOKMARK [2][-]{subsection.4.3}{Average group accuracy increases as signaling probability becomes more important. Decisions in a group context take longest between animals with similarly high abilities. }{section.4}
+\BOOKMARK [2][-]{subsection.4.4}{The skewness of the power distribution is maximized at intermediate waiting costs. }{section.4}
+\BOOKMARK [2][-]{subsection.4.5}{Which measure of consensus is most informative depends on how accurate pairwise decisions are. }{section.4}
+\BOOKMARK [1][-]{section.5}{Discussion}{}
+\BOOKMARK [1][-]{section.6}{Appendix}{}
+\BOOKMARK [2][-]{subsection.6.1}{Derivation of PDEs for waiting time and accuracy }{section.6}

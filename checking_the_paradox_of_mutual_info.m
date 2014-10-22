@@ -10,7 +10,7 @@
 % c13=0;c23=.3;c33=.7;
 time=0.05;
 c11=0;c21=time;c31=1-time;
-c12=1-time;c22=time;c33=0;
+c12=1-time;c22=time;c32=0;
 
 cvals=[c11 c21 c31; c12 c22 c32];
 % cvals=[c12,c22,c32];
@@ -36,17 +36,18 @@ dmat=reshape(dmatssaved(c,:,:),N,N);
 
         perf=zeros(2,Nd,Nt,Nt); %individual, leak, dominance, thresholds
 
-        perf(1,2:Nd,:,:)=c1*(1-twomat(l,2:Nd,:,:,1))+c2*(twomat(l,2:Nd,:,:,2))+c3*(1-twomat(l,2:Nd,:,:,1));
-        perf(2,2:Nd,:,:)=c1*(1-twomat(l,2:Nd,:,:,1))+c2*(twomat(l,2:Nd,:,:,2))+c3*(twomat(l,2:Nd,:,:,1));
+        perf(1,2:Nd,:,:)=c1*(1-twomat(leak,2:Nd,:,:,1))+c2*(twomat(leak,2:Nd,:,:,2))+c3*(1-twomat(leak,2:Nd,:,:,1));
+        perf(2,2:Nd,:,:)=c1*(1-twomat(leak,2:Nd,:,:,1))+c2*(twomat(leak,2:Nd,:,:,2))+c3*(twomat(leak,2:Nd,:,:,1));
 
-        perf(1,1,:,:)=c2*(twomat(l,1,:,:,2))+c3*(1-twomat(l,1,:,:,1));
-        perf(2,1,:,:)=c2*(twomat(l,1,:,:,2))+c3*(twomat(l,1,:,:,1));
+        perf(1,1,:,:)=c2*(twomat(leak,1,:,:,2))+c3*(1-twomat(leak,1,:,:,1));
+        perf(2,1,:,:)=c2*(twomat(leak,1,:,:,2))+c3*(twomat(leak,1,:,:,1));
 
         Tvals=zeros(N,opt_its);
 %         Tvals(:,1)=2*ones(N,1);
         % Tvals(:,1)=randi([1 Nt],N,1);
-        Tvals(:,1)=reshape(seqoptthresh(c,ic,:),[],1);
-        Tvals(3,1)=seqoptthresh(c,otheric,3);
+%         Tvals(:,1)=reshape(seqoptthresh(c,ic,:),[],1);
+%         Tvals(16,1)=seqoptthresh(c,otheric,3);
+        Tvals(:,1)=col(seqoptthresh(c,otheric,:));
         perfvals=zeros(N,opt_its);
 
         for i=1:N
@@ -116,7 +117,7 @@ d=size(cvecs,1);
 diffmat=zeros(N,d);
 for i=1:d
     cvec=cvecs(i,:);
-    diffmat(:,i)=thresh2perf(cvec,tvec1,twomat,dmatssaved(c,:,:),l)-thresh2perf(cvec,tvec2,twomat,dmatssaved(c,:,:),l);
+    diffmat(:,i)=thresh2perf(cvec,tvec1,twomat,dmatssaved(c,:,:),leak)-thresh2perf(cvec,tvec2,twomat,dmatssaved(c,:,:),leak);
 end
 
 
@@ -135,7 +136,7 @@ for i=1:N
     cvec=cvecs(1,:);
     tvec2=tvec1;
     tvec2(i)=seqoptthresh(c,otheric,i);
-    diffmat(:,i)=thresh2perf(cvec,tvec1,twomat,dmatssaved(c,:,:),l)-thresh2perf(cvec,tvec2,twomat,dmatssaved(c,:,:),l);
+    diffmat(:,i)=thresh2perf(cvec,tvec1,twomat,dmatssaved(c,:,:),leak)-thresh2perf(cvec,tvec2,twomat,dmatssaved(c,:,:),leak);
 end
 
 %%
@@ -154,7 +155,12 @@ id=eye(3);
 for j=1:Nt
     for c=1:3
     tvec(k)=j;
-    perfmat(:,j,c)=reshape(thresh2perf(id(c,:),tvec,twomat,dmatssaved(c,:,:),l),[],1);
+    perfmat(:,j,c)=reshape(thresh2perf(id(c,:),tvec,twomat,dmatssaved(c,:,:),leak),[],1);
     end
 end
+
+%%
+t1=group_props_parallelized(0,0,1,its,N,'unif',Nd,Nt,twomat,domvals,threshvals);
+t2=group_props_parallelized(1,0,0,its,N,'unif',Nd,Nt,twomat,domvals,threshvals);
+
     

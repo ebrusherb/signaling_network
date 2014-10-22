@@ -1,0 +1,398 @@
+\documentclass{article}
+\usepackage{latexsym}
+\usepackage{amssymb,amsmath}
+\usepackage{custom2}
+\usepackage{graphicx} % for figures
+\usepackage{epstopdf} % so can use EPS or PDF figures
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{amssymb,amsfonts}
+\usepackage[all,arc]{xy}
+\usepackage{enumerate}
+\usepackage{mathrsfs}
+\usepackage{booktabs}
+\usepackage[pdftex]{hyperref}
+\usepackage{lscape}
+\captionsetup{justification=RaggedRight, singlelinecheck=false}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\newcommand{\argmax}{\text{argmax}}
+\newcommand{\Tr}{\text{Tr}}
+%\newtheorem{claim}{Claim}
+
+\addtolength{\evensidemargin}{-.5in}
+\addtolength{\oddsidemargin}{-.5in}
+\addtolength{\textwidth}{1.4in}
+\addtolength{\textheight}{1.4in}
+\addtolength{\topmargin}{-.5in}
+
+
+\pagestyle{empty}
+
+\begin{document}
+\begin{center}
+\Large
+
+\end{center}
+
+
+\vspace{0pt}
+
+\begin{center}
+{\bf \LARGE{Development of a Signaling Network}}
+\vspace{10pt}
+\\ Eleanor Brush
+\\ updated December 12, 2012
+\end{center}
+
+\tableofcontents
+
+\vspace{0pt}
+\normalsize
+
+\section{Motivation }
+
+\begin{table*}\centering
+$$\text{The Model : }dX_t=\left(f-eX_t+bf(Y_t)\right)dt+\sigma^2 dW_t^X$$
+\ra{1.3}
+\begin{tabular}{@{}lll@{}}\toprule
+& Behavioral  & Neural 
+\\\midrule 
+\emph{Objects: } \\
+Individual / node & animal & neuron(al population) with preferences
+\\ Variable ($X,Y$) & estimate of dominance  & firing rate
+\\ Drift ($f$) &  trend in fights  & trend in firing rates
+\\ Source of drift & difference in fighting ability & difference in response to stimulus
+\\ Leak / error ($e$) & errors in cognitive process & loss of firing activity
+\\ Feedback ($b$) & importance of information from other animal & strength of connection between neurons
+\\ Threshold ($T$) & estimate below which an animal signals & firing rate at which a decision is made
+\\ \midrule
+\emph{Interpretation:} \\
+Conflict dynamics & fights (and other ways of gathering evidence) & firing rates
+\\ Outcome for pair & agreement about which is dominant & agreement about which is firing faster
+\\ Outcome for population & signaling network & comparisons between pairs of neurons
+\\ Consequence for pair & increased affiliation & ?
+\\ Consequence for pop. & power distribution & decision between left and right
+\\ \midrule 
+\emph{Measure of performance:} \\
+For individual & incorrectly signaling, time to decision & 
+\\ \bottomrule
+\end{tabular}
+\caption{Summary of analogy between the model as applied to behavioral and neural systems.}
+\end{table*}
+
+\section{Model as a Stochastic Differential Equation}
+
+\subsection{Derivation of the SDE from microscopic events }
+There are three processes that can cause an animal's estimate of its dominance with respect to another to change:
+\begin{enumerate}
+\item an error can be made so that the animal's estimate randomly changes from one point in time to the next without an external stimulus
+
+\item external observations provide evidence about each animal's dominance, e.g. by fighting each other they gather evidence about their relative strength
+
+\item receiving a signal provides evidence that the receiver is dominant to the signaler
+
+\end{enumerate}
+{\bf Assumption:} For now, we will assume that the two animals have access to the same external observations, which would be the case, for instance, if they only gather evidence from fights that they both are engaged in.  We can relax this assumption in the future.
+
+Let $X_t^{(i)}$ denote animal $i$'s estimate of its dominance at time $t$.  We can write down equations describing how these estimates change over time:
+\begin{align*}
+X_{t+\tau}^{(1)}=X_t^{(1)}+\sum_{i=0}^{N_{e_1}(\tau)}E_i^{(1)}+\sum_{i=0}^{N_f(\tau)}F_i+b_{s_2}S_2(X_t^{(2)},\tau)
+\\ X_{t+\tau}^{(2)}=X_t^{(2)}+\sum_{i=0}^{N_{e_2}(\tau)}E_i^{(2)}-\sum_{i=0}^{N_f(\tau)}F_i+b_{s_1}S_1(X_t^{(1)},\tau)
+\end{align*} 
+where
+\begin{itemize}
+\item $E_i^{(j)}$ describes the magnitude of an error in estimate for animal $j$, which are identically distributed over time; $N_{e_j}(\tau)$ describes the number of error events in an interval of length $\tau$ so that $\sum_{i=0}^{N_{e_j}(\tau)}E_i^{(j)}$ gives the total magnitude of errors in an interval of length $\tau$
+
+\item $F_i$ describes the magnitude of a piece of external evidence, which are identically distributed over time; $N_f(\tau)$ describes the number of external observations in an interval of length $\tau$ so that $\sum_{i=0}^{N_f(\tau)}F_i$ gives the total magnitude of external evidence in an interval of length $\tau$ (and the evidence gathered changes the animal's estimate in opposite directions, i.e. if a fight is won, one animal's estimate is increased while the other's is decreased by the same amount)
+
+\item $S_j(X_t^{(j)},\tau)$ gives the number of signals emitted by individual $j$ in an interval of length $\tau$ and $b_{s_j}$ describes the boost that each of those signals would give to animal $j+1'$s estimate of its dominance
+
+\end{itemize}
+The fact that the two animals are privy to the same external observations is captured by the identity of the second sums in the above equations.  {\bf Assumption:} The above equations assume that $\tau$ is small enough so that $X_t$ does not change significantly enough in the interval $[t,t+\tau)$ that signaling rates would change.  (Error and fighting rates do not depend on the estimates-- another assumption.)  We could write the evidence from signals as a sum over several events in the interval $[t,t+\tau)$ as with errors and observations, but this is equivalent to the formulation above since we assume the size of a signal and the strength of a boost from receiving a signal is constant over time.  
+
+We can now describe the distributions from which these events are drawn:
+\begin{itemize}
+\item $N_{e_j}(\tau)\sim \scr{P}(r_{e_j},\tau)$
+\item $E_i^{(j)}\sim \scr{N}(\mu_{e_j},\sigma^2_{e_j}) \text{ , i.i.d.}$
+\item $N_f(\tau)\sim\scr{P}(r_f,\tau)$
+\item $F_i\sim\scr{N}(\mu_f,\sigma^2_f) \text{ , i.i.d.}$
+\item $S_j(X_t^{(j)},\tau)\sim\scr{P}(f(X_t^{(j)}),\tau)$
+\end{itemize}
+where $\scr{P}(\lambda,\tau)$ denotes a Poisson process with rate $\lambda$ and $\scr{N}(\mu,\sigma^2)$ denotes a Normal distribution with mean $\mu$ and $\sigma^2$.  $f(x)$ gives the rate (probability) of emitting a signal as a function of the estimate $x$, which is decreasing in $x$.
+
+We now make two approximations:
+\begin{enumerate}
+\item If $Y_i$, i.i.d., are drawn from some distribution and $N(\tau)\sim\scr{P}(\lambda,\tau)$, then $Z(\tau)=\sum_{i=0}^{N(\tau)}Y_i$ is a compound Poisson process with 
+\begin{align*}
+\E[Z(\tau)]&=\E[N(\tau)]\E[Y]=\lambda\tau\E[Y]
+\\ \text{ and } Var(Z(\tau))&=\E[N(\tau)]\E[Y^2]=\lambda\tau\E[Y^2]
+\end{align*}
+For computational convenience, we will approximate the distribution of $Z(\tau)$ by $\scr{N}(\lambda\tau\E[Y],\lambda\tau\E[Y^2])$. (HOW VALID IS THIS?)
+
+\item If $\tau$ is big enough that enough events happen, then we can approximate the Poisson process $\scr{P}(\lambda,\tau)$ with $\scr{N}(\lambda\tau,\lambda\tau)$.
+
+\end{enumerate}
+
+This allows us to rewrite our equations for $X_t$ as:
+
+\begin{align*}
+X_{t+\tau}^{(1)}&=X_t^{(1)}+Y_{e_1}(\tau)+Y_f(\tau)+b_{s_2}Y_{s_2}(X_t^{(2)}\tau)
+\\ X_{t+\tau}^{(2)}&=X_t^{(2)}+Y_{e_2}(\tau)-Y_f(\tau)+b_{s_1}Y_{s_1}(X_t^{(1)}\tau)
+\end{align*}
+where 
+\begin{itemize}
+\item $Y_{e_j}(\tau)\sim\scr{N}(r_{e_j}\tau\mu_{e_j},r_{e_j}\tau(\sigma_{e_j}^2+\mu_{e_j}^2))$
+
+\item $Y_f(\tau)\sim N(r_f\tau\mu_f,r_f\tau(\sigma^2_f+\mu_f^2)$
+
+\item $Y_{s_j}(\tau)\sim\scr{N}(f(X_t^{(j+1)})\tau,f(X_t^{(j+1)})\tau)$
+
+\end{itemize}
+Finally, if we define the following constants:
+\begin{align*}
+m_{e_j}&=r_{e_j}\mu_{e_j},
+\\ n_{e_j}^2&=r_{e_j}(\sigma_{e_j}^2+\mu_{e_j}^2),
+\\ m_f&=r_f\mu_f,
+\\ n_f^2&=r_f(\sigma_f^2+\mu_f^2),
+\end{align*}
+then we get the following equations:
+\begin{align*}
+X_{t+\tau}^{(1)}&=X_t^{(1)}+\left[m_{e_1}+m_f+b_{s_2}f(X_t^{(2)})\right]\tau+n_f\sqrt{\tau}Z^{(1)}+n_{e_1}\sqrt{\tau}Z^{(2)}+b_{s_2}\sqrt{f(X_t^{(2)})}\sqrt{\tau}Z^{(3)}
+\\ X_{t+\tau}^{(2)}&=X_t^{(2)}+\left[m_{e_2}-m_f+b_{s_1}f(X_t^{(1)})\right]\tau-n_f\sqrt{\tau}Z^{(1)}+n_{e_2}\sqrt{\tau}Z^{(4)}+b_{s_1}\sqrt{f(X_t^{(1)})}\sqrt{\tau}Z^{(5)}
+\end{align*}
+where $Z^{(1)},\dots,Z^{(5)}\sim \scr{N}(0,1),$ i.i.d., which are equivalent to the stochastic differential equations:
+\begin{align*}
+dX_t^{(1)}&=\left[m_{e_1}+m_f+b_{s_2}f(X_t^{(2)})\right]dt+n_fdW_t^{(1)}+n_{e_1}dW_t^{(2)}+b_{s_2}\sqrt{f(X_t^{(2)})}dW_t^{(3)}
+\\ dX_t^{(2)}&=\left[m_{e_2}-m_f+b_{s_1}f(X_t^{(1)})\right]dt-n_fdW_t^{(1)}+n_{e_2}dW_t^{(4)}+b_{s_1}\sqrt{f(X_t^{(1)})}dW_t^{(5)}
+\end{align*}
+where $W_t^{(1)},\dots,dW_t^{(5)}$ are independent Brownian motions.
+
+We could make a few simplifying assumptions to reduce the number of parameters.  {\bf Assumptions:}
+\begin{itemize}
+\item $r_{e_1}=r_{e_2}$
+\item $\mu_{e_1}=\mu_{e_2}$, and even simpler would be to have both equal $0$ (expected error is $0$)
+\item $\sigma^2_{e_1}=\sigma^2_{e_2}$
+\item $b_{s_1}=b_{s_2}$ 
+\item and combining the above would give $m_{e_1}=m_{e_2}$ and $n_{e_1}=n_{e_2}$
+\end{itemize}
+
+\subsection{Ornstein-Uhlenbeck Variant }
+Both the mean and variance of the distribution of estimates increase with time for a pure drift-diffusion model.  The dynamics are more interesting if the estimates don't just keep increasing or decreasing more or less deterministically.  To add negative feedback and prevent this from happening, we can make the size of an error proportional to the current estimate:
+\begin{align*}
+dX_t^{(1)}&=\left[m_{e_1}X_t^{(1)}+m_f+b_{s_2}f(X_t^{(2)})\right]dt+n_fdW_t^{(1)}+n_{e_1}dW_t^{(2)}+b_{s_2}\sqrt{f(X_t^{(2)})}dW_t^{(3)}
+\\ dX_t^{(2)}&=\left[m_{e_2}X_t^{(2)}-m_f+b_{s_1}f(X_t^{(1)})\right]dt-n_fdW_t^{(1)}+n_{e_2}dW_t^{(4)}+b_{s_1}\sqrt{f(X_t^{(1)})}dW_t^{(5)}
+\end{align*}
+The Fokker-Planck equation now becomes
+\begin{align*}
+ \frac{\partial p}{\partial t}&=-(m_{e_1}x_1+m_f+b_{s_2}f(x_2))\frac{\partial p}{\partial x_1}-m_{e_1}p-(m_{e_2}x_2-m_f+b_{s_1}f(x_1))\frac{\partial p}{\partial x_2}-m_{e_2}p
+\\&+\frac{1}{2}(n_{e_1}^2+n_f^2+b_{s_2}^2f(x_2))\frac{\partial^2 p}{\partial x_1^2}-n_f^2\frac{\partial p}{\partial x_1\partial x_2}+\frac{1}{2}(n_{e_2}^2+n_f^2+b_{s_1}^2f(x_1))\frac{\partial^2 p}{\partial x_2^2}
+\end{align*}
+We can find a stationary distribution for each estimate individually:
+\begin{align}
+X^{(1)}& \sim N\left(-\frac{m_f}{m_e},\frac{n_f^2+n_e^2}{-2m_e}\right)\ \label{ou_stat1}
+\\ \text{ and } X^{(2)} &\sim N\left(\frac{m_f}{m_e},\frac{n_f^2+n_e^2}{-2m_e}\right) \label{ou_stat2}
+\end{align}
+and the covariance between the two estimates at steady state is
+\begin{align*}
+Cov(X^{(1)},X^{(2)})=\frac{-n_f^2}{-2m_e}.
+\end{align*}
+
+\section{Analyzing the Model without Stochasticity }
+As a first pass, we can ignore the Brownian motion / the noise and treat the model as a dynamical system:
+
+\begin{align*}
+\frac{dx}{dt}&=-ex+f+br(y+T)
+\\ \frac{dy}{dt}&=-ey-f+br(x+T)
+\end{align*}
+
+\subsection{Equilibria }
+The isoclines of this system are given by
+\begin{align*}
+\dot{x}=0 \Rightarrow x&=\frac{f}{e}+\frac{b}{e}r(y+T) 
+\\\dot{y}=0 \Rightarrow y&=-\frac{f}{e}+\frac{b}{e}r(x+T)
+\end{align*}
+
+The Jacobian of this system is given by
+$$J(x,y)=\left(\begin{array}{cccc} 
+-e & br'(y+T)
+\\ br'(x+T) & -e
+\end{array}\right)$$
+Letting $\tau=Tr(J(x,y))$ and $\Delta=\text{det}(J(x,y)),$ we see that $\tau=-2e$ and $\Delta=e^2-b^2r'(y+T)r'(x+T)$.  Since $e>0$, $\tau<0$ and any fixed point will be a saddle point, a stable sink, or a stable spiral, depending on the sign of $\Delta$.  
+\begin{align*}
+\Delta<0 &\Leftrightarrow e^2-b^2r'(y+T)r'(x+T)<0 
+\\&\Leftrightarrow e<b\sqrt{r'(y+T)r'(x+T)} \text{ since } e,b, \text{ and } r'(y+T)r'(x+T)\geq0
+\\ &\Leftrightarrow \left\{\begin{array}{cccc}
+b>0 & \text{ if } e=0
+\\ b>2\epsilon e & \text{ if } e>0
+\end{array}\right.
+\end{align*}
+Therefore, if there is a fixed point with $r'(y+T)\neq 0$ and $r'(x+T)\neq 0$ (i.e. the isoclines cross where their slopes are not zero), the fixed point is a saddle and there are two other stable fixed points only if $b>2\epsilon e$.  Figure \ref{basins} shows the basins of attraction for the two stable nodes when the system is bistable.  
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6in]{basins_of_attraction.eps}
+\end{center}
+\caption{{\bf The basins of attraction for each of the two stable nodes in the case when the system is bistable.} The fixed points are marked in red circles.  The isoclines are marked as blue lines.  The red line separates the basin of attraction for the fixed point where the stronger animal is signaling (above the red line) and the fixed point where the weaker animal is signaling (below the red line). \label{basins}}
+\end{figure}
+
+
+Let $$\psi(b)=\frac{2\epsilon e(\epsilon -\frac{f}{e})-b(\frac{f}{e}+\epsilon)}{2\epsilon e-b} \text{ and } \varphi(b)=\frac{ 2\epsilon e(\epsilon+\frac{f}{e})+b(\frac{f}{e}-\epsilon)}{2\epsilon e-b}$$
+Then, there are three general cases, depending on the magnitude of $\frac{f}{e}$ (Figures \ref{bifurcation}-\ref{wireframe}):
+\begin{enumerate}
+\item $\frac{f}{e}<\epsilon$:
+\begin{enumerate}
+\item neither animal signaling if $T>\epsilon+\frac{f}{e}$
+\item animal 1 not signaling and animal 2 signaling at a non-zero rate if $T<\epsilon+\frac{f}{e}$ and 
+$$T>\left\{\begin{array}{cccc}
+\varphi(b) & \text{ if } b>2\epsilon e
+\\ \psi(b) & \text{ if } b<2\epsilon e
+\end{array}\right.$$
+
+\item both animals signal at a non-zero rate if $b<2\epsilon e$ and $T<\psi(b)$
+\item two stable equilibria if $b>2\epsilon e$ and $T<\varphi(b)$
+\end{enumerate}
+\item $\frac{f}{e}>\epsilon$:
+\begin{enumerate}
+\item neither animal signaling if $T>\epsilon+\frac{f}{e}$
+\item animal 1 not signaling and animal 2 signaling at a non-zero rate if $T<\epsilon+\frac{f}{e}$ and $T>\frac{f}{e}-\epsilon$
+\item animal 1 not signaling and animal 2 signaling at a rate $=1$ if $T<\frac{f}{e}-\epsilon$
+\end{enumerate}
+\end{enumerate}
+In summary, when the difference in fighting ability is low, there is more uncertainty about which animal is dominant and there can even be two stable equilibria.  Once the difference in fighting ability is great enough, there can never be a stable equilibrium where the stronger animal thinks he is subordinate, but the equilibrium estimate of the weaker animal depends on the threshold below which signaling occurs.
+
+In the above analysis, we considered fixed values of $b$ and $f$ and determined how the value of the threshold $T$ affected the behavior of the system.  In practice, it seems more reasonable for there to be fixed values of $T$ and $b$ (i.e. psychologically all animals in the population are more or less the same), but the difference in fighting ability will vary from pair to pair.  If this is the case, then we need to determine how the value of $f$ affects the behavior of the system (Figures \ref{f_heatmap} and \ref{wireframe}):
+\begin{enumerate}
+\item $T>\epsilon$ (so that no animal ever signals when he has a positive estimate of its own dominance):
+\begin{enumerate}
+\item neither animal signals if $f<e(T-\epsilon)$ 
+\item the weaker animal signals at a non-zero rate if $f>e(T-\epsilon)$ and $f<e(T+\epsilon)$
+\item the weaker animal signals at a maximal rate if $f>e(T+\epsilon)$
+\end{enumerate}
+\item $T<\epsilon$
+\begin{enumerate}
+\item both signal if $b<2\epsilon e$ and $f<\frac{(2\epsilon e-b)e(\epsilon-T)}{2\epsilon e+b}$
+\item the system is bistable with two equilibria, and in either case one animal doesn't signal and the other signals at a non-zero rate if $b>2\epsilon e$ and $f<\frac{(b-2\epsilon e)e(\epsilon-T)}{2\epsilon e+b}$
+\item the weaker animal signals at a non-zero rate if $f>\left|\frac{(b-2\epsilon e)e(\epsilon-T)}{2\epsilon e+b}\right|$ and $f<e(T+\epsilon)$
+\item the weaker animal signals at a maximal rate if $f>e(T+\epsilon)$
+\end{enumerate}
+\end{enumerate}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=1\textwidth]{bifurc_diagram.pdf}
+\end{center}
+\caption{{\bf The equilibria of the signaling model as a function of feedback level, $b$, and signaling threshold, $T$.} For both plots, $e=.5$, $\epsilon=.1$. As $f$ increases from less than $\epsilon e$ to greater than $\epsilon e$, the possible equilibria change.  \label{bifurcation}}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6in]{heatmap_bifurcation_v1.eps}
+\end{center}
+\caption{{\bf The critical value of the parameter $f$ as a function of $b$ and $T$.}  For a given pair of values of $b$ and $T$, if $f$ is above the value indicated by the heatmap the equilibrium of the system is such that the weaker animal signals at a non-zero rate and the stronger animal doesn't signal.  If $f$ is below the value indicated by the heatmap, the equilibria is as indicated by the text. \label{f_heatmap}}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{wireframe_bifurcation_v2.eps}
+\caption{{\bf The dependence of the equilibria of the system on all three parameters, $b$, $T$, and $f$.} $T$ is on the $x$ axis, $b$ is on the $y$ axis and $f$ is on the $z$ axis.  If $f$ is above the upper plane, the equilibrium is such that the weaker animal signals at a maximal rate.  If $f$ is between the two planes, the equilibrium is such that the weaker animal signals at a non-zero rate.  If $f$ is below the lower plane, the equilibria depends on $b$ and $T$ as indicated by Figures \ref{bifurcation} and \ref{f_heatmap}. \label{wireframe}}
+\end{figure}
+
+\subsection{Development of a Signaling Network }
+Suppose these dynamics are going on between every pair of animals in a group where the fighting abilities are drawn from some distribution.  How will a network of signals exchanged develop?  Let's first look at a simple metric of such a network: the number of signalers sending signals to a given animal.  
+\begin{align*}
+P(n \text{ signalers})=\int P(x)P(n \text{ signalers}|x)dx \text{ where $x$ is the fighting ability of a focal animal}
+\end{align*}
+If $T>\epsilon$ then animal $i$ signals to animal $j$ if and only if $f_j-f_i>e(T-\epsilon)$.  Therefore,
+\begin{align*}
+P(n \text{ signalers}|x)={N-1 \choose n}P(x-y>e(T-\epsilon))^nP(x-y<e(T-\epsilon))^{(N-1-n)}
+\end{align*}
+where $N$ is the total number of animals in the group and we use the binomial distribution to express the probability of $n$ signalers as a function of the probability of one of the other $N-1$ animals signaling, which we assume to be independent events.
+
+At first, we will assume that fighting ability is drawn uniformly from some range $[-L,L]$.  In order for signaling to be possible, we need $e(T-\epsilon)<2L$.
+\begin{align*}
+\\ \Rightarrow P(x-y>e(T-\epsilon))&=\frac{L+x-e(T-\epsilon)}{2L} \\ \text{ and } P(x-y<e(T-\epsilon))&=\frac{L-x+e(T-\epsilon))}{2L}
+\\ \Rightarrow P(n \text{ signalers}|x)&={N-1\choose n}\left(\frac{L+x-e(T-\epsilon)}{2L}\right)^n\left(\frac{L-x+e(T-\epsilon))}{2L}\right)^{(N-1-n)}
+\\ \Rightarrow P(n \text{ signalers})&=\int_{-L+e(T-\epsilon)}^L\frac{1}{2L}{N-1\choose n}\left(\frac{L+x-e(T-\epsilon)}{2L}\right)^n\left(\frac{L-x+e(T-\epsilon))}{2L}\right)^{(N-1-n)}dx
+\\ &=\int_0^{1-\frac{e(T-\epsilon)}{2L}}{N-1\choose n}z^n(1-z)^{(N-1-n)}dz \text{ using $z=\frac{L+x-e(T-\epsilon)}{2L}$}
+\\ &={N-1\choose n}\int_0^{1-\frac{e(T-\epsilon)}{2L}}z^n(1-z)^{(N-1-n)}
+\\ &={N-1 \choose n} B\left(1-\frac{e(T-\epsilon)}{2L};n+1,N-n\right) \text{ where $B(c;x,y)=\int_0^cz^{x-1}(1-z)^{y-1}dz$}  
+\\&={N-1\choose n}B(n+1,N-n)F\left(1-\frac{e(T-\epsilon)}{2L};n+1,N-n\right)
+\\&=\frac{1}{N}F\left(1-\frac{e(T-\epsilon)}{2L};n+1,N-n\right) \tag{$\star$} \label{STAR}
+\end{align*} 
+where $F(x;\alpha,\beta)=\int_0^x\frac{z^{\alpha-1}(1-z)^{\beta-1}}{B(\alpha,\beta)}dz$ is the cumulative distribution function of the Beta distribution and $B$ is the Beta function with shape parameters $\alpha$ and $\beta$.
+
+If $n=0$, we have to make a small correction:
+\begin{align*}
+P(0 \text{ signalers})&=\frac{1}{N}F\left(1-\frac{e(T-\epsilon)}{2L};1,N\right)+\frac{e(T-\epsilon)}{2L}
+\end{align*}
+since if $x\in [-L,-L+\frac{e(T+\epsilon)}{2L}],$ the animal will receive no signals.
+
+Suppose $T=\epsilon$ so signaling at a non-zero rate starts as soon as an animal's estimate is negative.  Then 
+\begin{align*}
+P(n \text{ signalers})&=\frac{1}{N}F(1-0;n+1,N-n)
+\\&=\frac{1}{N}F(1;n+1,N-n)
+\\&=\frac{1}{N}
+\end{align*}
+so the distribution of number of signalers is uniform over the possibilities $0,1,\dots,N-1$.  If $T\gneq \epsilon$, having fewer signalers is more probable and having more signalers is less probably.  The probability distribution of number of signalers for a small set of parameters is shown in Figure \ref{derived_sig_probs}.
+
+\begin{figure}
+\includegraphics[width=6in]{distributions_of_signals_received.pdf}
+\caption{The probability distribution of number of signalers.  The lines represent the analytically derived distribution Eq. (\ref{STAR}), assuming a uniform distribution of fighting abilities.  The dots represent probabilities from simulated signaling networks where fighting abilities are drawn from a normal distribution. \label{derived_sig_probs}}
+\end{figure}
+
+\section{Parameter Optimization for Individuals }
+The only case where the parameters really affect the dynamics is when the system exhibits bistability.
+
+\subsection{Minimizing Error Rate or Decision Time }
+
+\subsection{Optimizing Response to Changes in Fighting Ability }
+
+\section{Effects of Individual Optimization on the Signaling Network }
+
+\subsection{Mutual Information between Fight Distribution and Signaling Network }
+
+\subsection{Timescale Separation }
+
+
+
+\section{To Do }
+
+\begin{itemize}
+\item More mathematical analysis.
+\begin{itemize}
+\item expected time for an animal to start signaling
+\item probability of one or the other animal to be the first to start signaling
+\item optimize error rate / decision time with respect to the threshold for each pair and then see how that affects the resulting distribution of signaling behavior
+\end{itemize}
+\item Embed the signaling dynamics in a network.  
+\begin{itemize}
+\item What's the relationship between the distribution of fighting abilities and the distribution of signaling behaviors?  Between fighting abilities and the distribution of power?  And how does that depend on the metric used to calculate power?
+\item What's the timescale separation between fighting abilities / fight outcomes / signaling behaviors and the power distribution?  
+	\begin{itemize}
+	\item when formulated as a Langevin equation: measure timescales through the expected escape time using martingales
+	\item when formulated as a dynamical system: measure timescales through time constants of potential wells.
+	\end{itemize}
+\item What's the / is there a tradeoff between mutual information between fighting abilities and power distribution and stability of the power distribution?
+\end{itemize}
+\item Compare to data.
+	\begin{itemize}
+	\item What are the relative rates of fighting and signals observed / predicted?
+	\item Can we explain the data with our model?
+	\item Do the monkeys weight fights won and lost equally?  Are they trying to maximize reward, minimize punishment, or are the two weighted equally?
+	\item Are the monkeys trying to minimize error tae or decision time? Can we tell if they're being forced to signal?
+	\item Is there a sense in which the monkeys are performing optimally? 
+	\item (ALSO THEORY QUESTION) How efficiently are the monkeys representing /using the information they're observing about the world?
+	\item If we can estimate parameters like the thresholds for signaling, how are they related to other variables in the system?
+	\end{itemize}
+\end{itemize}
+
+
+
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{signaling_model}
+
+\end{document}
+
+

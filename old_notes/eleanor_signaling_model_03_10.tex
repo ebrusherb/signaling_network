@@ -1,0 +1,145 @@
+\documentclass{article}
+%\documentclass{book}
+%\documentstyle[amssymb,amsmath]{article}
+%\documentclass[aps,tightenlines,amscd,amsmath,amssymb,verbatim,12pt]{revtex4}
+\usepackage{latexsym}
+\usepackage{amssymb,amsmath}
+\usepackage{custom2}
+\usepackage{graphicx} % for figures
+\usepackage{epstopdf} % so can use EPS or PDF figures
+\usepackage{subfig}
+\usepackage{url}
+\usepackage{amssymb,amsfonts}
+\usepackage[all,arc]{xy}
+\usepackage{enumerate}
+\usepackage{mathrsfs}
+\captionsetup{justification=RaggedRight, singlelinecheck=false}
+%  \newcommand{backslash the  command}{what it should do}
+
+\addtolength{\evensidemargin}{-.5in}
+\addtolength{\oddsidemargin}{-.5in}
+\addtolength{\textwidth}{1.4in}
+\addtolength{\textheight}{1.4in}
+\addtolength{\topmargin}{-.5in}
+
+\pagestyle{empty}
+
+\begin{document}
+\begin{center}
+\Large
+
+\end{center}
+
+
+\vspace{0pt}
+
+\begin{center}
+{\bf Preliminary ideas and comparison to Karen's work}
+\\ Eleanor Brush
+\\ March 10, 2012
+\end{center}
+
+\vspace{0pt}
+\normalsize
+\section{Draft of a model}
+
+The model that I'm thinking about right now is the following.  The basic idea is that time is discrete, measured in when fighting occurs.  At each point in time (=each time a fight occurs), each individual gathers evidence about its dominance with respect to its opponent.  At each point in time, the individual's estimate ``leaks" some amount, meant to represent the individuals forgetting the estimate at the last point in time and making a conservative lower estimate.  When the evidence that an individual has about its being subordinate reaches/ passes some threshold $T$, it emits a signal.
+
+
+\underline{\bf Variables:}
+\begin{enumerate}
+\item{$x_{ij}(t)=$ the estimate $i$ has of its dominance with respect to $j$}
+\item{$e_{ij}(t)=$ the evidence $i$ receives at time $t$ about its dominance wrt to $j$
+
+In the simplest case, this would be the result of a fight between $i$ and $j$, drawn from a normal distribution, $N(a_i-a_j,\sigma^2)$ where $a_i$,$a_j$ are their respective fighting abilities.  
+
+In a more complicated model, individual $i$ could also gather evidence about $j$ from $j$'s interactions with other individuals.}
+\item{$s_{ij}(t)=$ indicates whether $i$ receives a signal from $j$ at time $t$}
+\end{enumerate}
+
+
+\underline{\bf Difference equations for the variables:}
+\begin{align*}
+x_{ij}(t+1)&=(1+\lambda)x_{ij}(t)+e_{ij}(t)+\alpha s_{ij}(t)
+\\ s_{ij}(t)&=\mathbb{I}_{x_{ji}(t)\leq T< x_{ji}(t-1)}
+\end{align*}
+
+\underline{\bf Parameters:}
+\begin{enumerate}
+\item{$a_i$: $i$'s ``true" fighting ability}
+\item{$\sigma^2$: variance or noise in the fight outcomes / evidence gathered by each individual}
+\item{$\lambda$: ``leak" or forgetting parameter}
+\item{$\alpha$: indicates how informative receiving a signal is compared to winning a fight}
+\item{$T$: threshold dictating when an individual signals}
+\end{enumerate}
+
+\section{What we can ask / answer by looking at such a model}
+There are very similar models out there for different situations.  
+
+The leaky accumulator model / drift diffusion model in neuroscience / psychology describes the dynamics of neuron's firing rates over time as a function of the visual stimulus they're exposed to:
+\begin{equation} \frac{dx}{dt}=(\lambda x+A(t))dt+cdW_t \label{neuro} \end{equation}
+where $A(t)$ is the visual stimulus at time $t$ and $W_t$ is a Weiner process / Brownian motion / white noise.
+
+
+Similar models have been used to model animals' decision making processes about backing down or continuing to fight in a particular contest given how the fight's been going so far:
+\begin{equation} x_{ij}(t+1)=x_{ij}(t)+e_{ij}(t) \label{adrian} \end{equation}
+where $e_{ij}\sim N(a_i-a_j,\sigma^2)$, if $a_i,a_j$ are the contestants relative ``resource holding potential" (or ``RHP").  
+
+
+Equations (\ref{neuro}) with $\lambda=0$ is the continuous time version of (\ref{adrian}), which is equivalent to performing a sequential probability ratio test to find the maximum likelihood estimate of $a_i-a_j$.  This can be shown to be an optimal decision-making procedure in the sense that if you set your error threshold at some level, this process will come to a decision in the shortest time and if you set the length of the decision-making process, this process will be the most accurate.  What's new / interesting about the model that I wrote above is that the outcome of the decision process-- the emission of a signal-- feeds back to influence future decisions.  
+
+\begin{table}[h] 
+	\caption{\label{matrices} Similar models: decision making in neuroscience / psychology, e.g. Newsome et al; animals deciding to back down in a particular contest, e.g. Adrian de Froment's thesis; this model.}
+		\begin{tabular}{lllllll} 
+			& \vline & Neuro  & \vline & Backing down  & \vline & Here \\
+			\hline 
+			Variable & \vline & firing rate & \vline & estimate of ``RHP" & \vline & estimate of fighting abilities
+			\\Time & \vline & continuous & \vline & discrete & \vline & discrete
+			\\Input / Evidence & \vline & visual stimulus & \vline & rams butting heads & \vline & fight outcomes
+			\\ Distribution to Learn & \vline & dots' movements & \vline & RHP & \vline & fighting ability
+			\\ $\lambda$ & \vline & leak in activity & \vline &  NA & \vline &  forgetting 
+			\\ Decision & \vline & left or right & \vline & back down or keep fighting & \vline & signal or not
+			\end{tabular}
+\end{table}
+
+
+
+\underline{\bf Empirical First Steps:}
+\begin{enumerate}
+\item{Does this model explain the data at all?}
+\item{Can we fit parameters to data?  How?  Perhaps by looking at the ratio of the rates of fighting and signaling at steady state.
+\begin{enumerate}
+\item{$a_i-a_j$: difference in ``true" fighting ability}
+\item{$\sigma^2$: noise of evidence gathering process}
+\item{$\lambda$: rate at which estimates are forgotten}
+\item{$\alpha$: weight with which signals affect estimates}
+\item{$T$: threshold of estimates at which signals are emitted}
+\end{enumerate}
+}
+\end{enumerate}
+
+\underline{\bf Theoretical Questions:}
+\begin{enumerate}
+\item{When there is ``leak" or forgetting ($\lambda\neq 0$), by having signaling feedback to influence future decision ($\alpha\neq 0$), can individual's learn better / are estimates of fighting abilities more stable / is uncertainty about fighting abilities reduced? }
+\item{If there is forgetting ($\lambda\neq 0$), is there a feedback weight ($\alpha$) that optimizes the rate at which individuals learn whether they're subordinate or dominant / minimizes the error with which individuals signal / minimizes the number of fights a pair has to engage in / maximizes a reward coming from signaling correctly?  Is this what we observe in the parameters when we fit them to the data?}
+\item{Hypothesis: The stead state ratio of signaling rate to fighting rate is a decreasing function of $\lambda$, (increasing in $-\lambda$) and a decreasing function of $\alpha$.}
+\end{enumerate}
+
+\section{Comparison to Karen's work}
+This is closely related to the modeling work in the Karen paper, but I think the question and the methods are different.  The big questions here are:
+
+\begin{enumerate}
+\item{Can we describe how signaling behavior between a pair of individual develops as a function of the fights that occur between them?  Does a learning model where individuals integrate evidence from successive fights and signal when the integrated evidence passes some threshold provide an adequate description?  Can we fit some of the parameters of the model to data?}
+\item{How do forgetting and signaling feedback interact to affect how individuals learn whether they're dominant or subordinate?}
+\end{enumerate}
+
+In the Karen paper, as here, fighting abilities follow some probability distribution that dictates the outcomes of fights.  With perfect learning and no errors in signaling, this distribution of fight outcomes is translated directly into a distribution of signals emitted.  With errors in signaling or with imperfect learning, a history of fight outcomes becomes a signal when it reaches some threshold.  The question in Karen's work, as I understand it, is to reproduce the observed number of signalers / number of signals distributions by changing the underlying distribution of fighting abilities, whether there are errors in signaling or not, whether there is imperfect learning, and the threshold beyond which an individual emits a signal.  
+
+
+There's a difference in the questions in that Karen's work is looking to reproduce the observed heavy-tailed distribution of power, whereas the above model would be looking at the development of the signaling network.  Instead of making probabilistic statements about fight outcomes and signaling behavior that lead to a distribution of signals received over the group, I would be using a dynamical model to track the relationship between a particular pair over time.  Finally, the above model allows for the signaling behavior to feedback and influence the decision-making process.
+
+
+
+\end{document}
+
+

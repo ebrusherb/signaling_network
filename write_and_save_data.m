@@ -17,12 +17,18 @@ deltax1=0.01;
 threshvals1=.1:.1:8;
 Nt1=length(threshvals1);
 
-%%
+indices1=1:Nt1;
+
+
+% filename=strcat('variables','.mat');
+% save(filename,'Nl','Nd','Nt','lvals','domvals','threshvals');
+
+
 twomat=zeros(Nl,Nd,Nt,Nt,2); %leak, dominance, thresholds, prob, time
 
-for k=1:Nl
+for k=2
     l=lvals(k);
-    for u=1:Nd
+    for u=4:Nd
         d=domvals(u);
         for i=1:Nt
             T1=threshvals(i);
@@ -35,21 +41,24 @@ for k=1:Nl
     end
 end
 
-%%
-onemat=zeros(Nl,Nd,Nt1,2);
+% 
+% onemat=zeros(Nl,Nd,Nt1,Nt1,2);
+% 
+% for k=1:Nl
+%     l=lvals(k);
+%     for u=1:Nd
+%         d=domvals(u);
+%         for i=1:Nt1
+%             t1=threshvals1(i);
+%             for j=1:Nt1
+%                 t2=threshvals1(j);
+%                 [x,y,~]=solve_pde_1d(-t1,d,t2,deltax1,l,b);
+%                 onemat(k,u,i,j,:)=[x y];
+%             end
+%         end
+%     end
+% end
 
-for k=1:Nl
-    l=lvals(k);
-    for i=1:Nd
-        d=domvals(i);
-        for j=1:Nt1
-            t=threshvals1(j);
-            [x,y,~]=solve_pde_1d(-t,d,t,deltax1,l,b);
-            onemat(k,i,j,:)=[x y];
-        end
-    end
-end
 
-%%
-filename=strcat('twomat_long_run','.mat');
+filename=strcat('/Users/eleanorbrush/Desktop/twomat_long_run','.mat');
 save(filename,'twomat','lvals','domvals','threshvals','threshvals');
