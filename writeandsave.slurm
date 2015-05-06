@@ -2,7 +2,7 @@
 
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
-#SBATCH -t 20:00:00
+#SBATCH -t 15:00:00
 #SBATCH -J leakjob
 #SBATCH -o log.%j
 #SBATCH --mail-type=begin
@@ -21,10 +21,11 @@ echo '-------------------------------'
 echo -e '\n\n'
 
 EXEC=/usr/licensed/bin/matlab
+
 OPTS=' -singleCompThread -nodisplay -nosplash'
 
 export PROCS=${SLURM_CPUS_ON_NODE}
 
-${EXEC}${OPTS} < write_and_save_data_parallel.m
+${EXEC}${OPTS} < writeandsave_init.m
 
 rm -rf /scratch/network/brush/tmp/$SLURM_JOB_ID

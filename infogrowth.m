@@ -4,9 +4,6 @@ cstep=.1;
 vec=0:cstep:1;
 Nc=length(vec);
 
-% X=repmat(0:cstep:1,1,11);
-% Y=reshape(repmat(0:cstep:1,11,1),1,[]);
-
 X=[];
 Y=[];
 layers=cell(Nc,1);
@@ -23,9 +20,8 @@ Nc=length(X);
 indices=1:Nt;
 leak=2;
 
-% timevec=.1:.1:5;
-% Ntime=length(timevec);
 %%
+Ntime=100;
 mut_time=zeros(Nc,6,Ntime);
 
 for i=1:Nc
@@ -38,14 +34,9 @@ for i=1:Nc
     mut_time(i,:,:)=t;
 end
 %%
-filename='/Users/eleanorbrush/Desktop/infogrowth_output.mat';
-% save(filename,'mut_time');
-%%
-% diag=1:(N+1):N^2;
-% offdiag=setdiff(1:(N^2),diag);
 layerstoplot=[1 3 5];
 Nlays=length(layerstoplot);
-Ntime=100;
+Ntime=50;
 mut_time=zeros(Nlays,6,Ntime+1);
 for I=1:Nlays
     i=layers{layerstoplot(I)}(1);
@@ -60,6 +51,10 @@ for I=1:Nlays
     t=group_props_time(c1,c2,c3,its,N,'unif',Nd,Nt,twomat2,domvals,threshvals,leak,timevec);
     mut_time(I,:,:)=t;
 end
+%%
+filename='/Users/eleanorbrush/Desktop/infogrowth_output.mat';
+% save(filename,'mut_time','layerstoplot','Nlays','Ntime',);
+
 %% horizontal time plots look like crap
 % figure;
 % set(gcf,'Color','w')
@@ -135,6 +130,7 @@ xpos=.3;
 
 
 layerstoplot=[1 3 7];
+Nlays=length(layerstoplot);
 % linesty={'-.','--','-'};
 linesty={'-','-','-'};
 p=zeros(1,7);
@@ -155,7 +151,7 @@ for now=Nlays:-1:1
     fourcolsnow=hsv2rgb(fourcolsnow);
     for i=1:4
     I=funstoplot(i);
-    p(i+3)=plot((log(timevec)),[0; (col(mut_time(now,I,2:end)))],'-','Color',fourcolsnow(colorperm(i),:),'LineStyle',linesty{now},'LineWidth',lw);
+    p(i+3)=plot((log(timevec)),[0; (col(mut_time(now,I,1:end)))],'-','Color',fourcolsnow(colorperm(i),:),'LineStyle',linesty{now},'LineWidth',lw);
     [~,w]=max(mut_time(now,funstoplot,end));
     plot((log(timevec)),(col(mut_time(now,funstoplot(w),:))),'-','Color',fourcolsnow(colorperm(w),:),'LineStyle',linesty{now},'LineWidth',lw);
     end
@@ -193,7 +189,7 @@ set(gcf,'PaperPosition',[0 0 w h]);
 
 filename=strcat('/Users/eleanorbrush/Desktop/','infogrowth','.pdf');
 print(filename,'-dpdf','-r300');
-%% combined triangle and time plots
+%% combined best fun triangle and time plots
 yellow=[1 1 0];
 red=[.9 0 0];
 green=[0 .7 0];
@@ -215,12 +211,15 @@ set(gcf,'Position',[.5 1 w h]);
 marg=[.1 .063];
 xpos=.3;
 
+layerstoplot=[1 3 5];
+Nlays=length(layerstoplot);
+
 highlight='on';
-tohighlight=[layers{1}(1) layers{3}(1) layers{5}(1)];
+tohighlight=[layers{layerstoplot(1)}(1) layers{layerstoplot(2)}(1) layers{layerstoplot(3)}(1)];
 pointlabels={'b','c','d'};
 
 subplot(3,4,[1:3 5:7 9:11])
-% plot(1:10)
+
 triimage_discrete2(scaledbestfun,bestfun,transformed,cornerlabels,funtypes2,fourcols,highlight,tohighlight,lw,pointlabels)
 set(gca,'xlim',[0-2/11 2+2/11],'ylim',[0-1.7321/11 1.7321+1.7321/11])
 v=get(gca,'Position');
@@ -228,15 +227,13 @@ ratio=v(4)/v(3);
 scale=1;
 set(gca,'Position',[.05 v(2) scale*v(3) scale*v(4)])
 
-layerstoplot=[1 3 7];
+
 % linesty={'-.','--','-'};
 linesty={'-','-','-'};
 p=zeros(1,7);
 for now=1:Nlays
-% for now=Nlays:Nlays
 
     subplot(3,3,3*(now-1)+3)
-%     plot(1:10)
     hold on
     j=layerstoplot(now);
     k=layers{j}(1);
@@ -251,9 +248,10 @@ for now=1:Nlays
     fourcolsnow=hsv2rgb(fourcolsnow);
     for i=1:4
     I=funstoplot(i);
-    p(i+3)=plot((log(timevec)),[0; (col(mut_time(now,I,2:end)))],'-','Color',fourcolsnow(colorperm(i),:),'LineStyle',linesty{now},'LineWidth',lw);
+    p(i+3)=plot(log(timevec),[0; (col(mut_time(now,I,2:end)))],'-','Color',fourcolsnow(colorperm(i),:),'LineStyle',linesty{now},'LineWidth',lw);
     end
-
+    [~,which]=max(mut_time(now,funstoplot,end));
+    plot(log(timevec),[0; (col(mut_time(now,funstoplot(which),2:end)))],'-','Color',fourcols(colorperm(which),:),'LineStyle',linesty{now},'LineWidth',lw)
     set(gca,'xlim',[log(sigfig(tmin)-3*step) log(sigfig(tmax)+step)])
 %     v=get(gca,'Position');
 %     set(gca,'Position',[.2 v(2:end)]);
@@ -261,11 +259,11 @@ for now=1:Nlays
 %     timeticks=[.25 .5 1:.5:5];
     switch now
         case 3
-        timeticks=.1:.01:.5;
+        timeticks=[.25 .5 1  2];
         case 2
-        timeticks=[.25 .5 1 1.5 2];
+        timeticks=[.25 .5 1  2];
         case 1
-        timeticks=[2:.5:4.5];
+        timeticks=[2:.5:4];
     end
     set(gca,'xtick',log(timeticks),'xticklabel',(timeticks))
     v=get(gca,'Position');
@@ -275,17 +273,20 @@ for now=1:Nlays
     [x,y]=data2norm(xlim(1),ylim(2));
     annotation('textbox',[x-.1 y .05 .04],'String',['(' alphabet(now+1) ')'],'FitBoxToText','on','FontSize',textfontsz,'FontName',fontname,'EdgeColor','none','VerticalAlignment','middle','HorizontalAlignment','left')
 end
+
 xlabel('Time','FontName',fontname,'FontSize',textfontsz)
 ylab=ylabel('Mutual information','FontName',fontname,'FontSize',textfontsz);
 v=get(ylab,'Position');
-set(ylab,'Position',[log(.228) v(2)-.09 v(3)]);
+set(ylab,'Position',[log(timeticks(1))-.75 v(2)-.09 v(3)]);
 [leg,hobj]=legend(p(4:end),{'number of signals','number of signalers','entropy','eigenvector centrality'});
+
 legend('boxoff')
 set(leg,'Position',[.05 .73 .1 .1],'FontName',fontname)
 textobj = findobj(hobj, 'type', 'line');
 for i=[1 3 5 7]
     set(textobj(i),'XData',[.17 .27])
 end
+
 annotation('textbox',[.1 .93 .01 .04],'String','(a)','FitBoxToText','on','FontSize',textfontsz,'FontName',fontname,'EdgeColor','none','VerticalAlignment','middle','HorizontalAlignment','left')
 
 set(gcf,'PaperSize',[w h]);

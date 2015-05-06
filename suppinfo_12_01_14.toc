@@ -1,0 +1,9 @@
+\contentsline {subsection}{\numberline {A.}Derivation of PDEs for waiting time and accuracy }{1}{subsection.0.1}
+\contentsline {subsubsection}{\numberline {A.1}SDEs }{1}{subsubsection.0.1.1}
+\contentsline {subsubsection}{\numberline {A.2}Expected first exit time }{1}{subsubsection.0.1.2}
+\contentsline {subsubsection}{\numberline {A.3}Distribution of exit points }{3}{subsubsection.0.1.3}
+\contentsline {subsubsection}{\numberline {A.4}Our model }{5}{subsubsection.0.1.4}
+\contentsline {subsection}{\numberline {B.}Initial conditions }{6}{subsection.0.2}
+\contentsline {subsection}{\numberline {C.}Analysis of homogeneous abilities }{6}{subsection.0.3}
+\contentsline {subsection}{\numberline {D.}Explanation for most informative measures }{6}{subsection.0.4}
+\contentsline {subsection}{\numberline {E.}Supplemental Figures }{7}{figure.caption.8}

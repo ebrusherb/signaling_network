@@ -1,7 +1,7 @@
 function [prob time perf]=solve_pde_2d(Lx,Ly,d,Ux,Uy,deltax,deltay,l,b)
 % dX1=(-lX1+b*(2d-1))dt+b*sqrt(d)dW1t-b*sqrt(1-d)dW2t, similar for dX2
 % simplified PDE written as
-% 0=(-lX+a)df/dx+(-ly+a)df/dy+D1d^2f/dx^2-2Ddd^2f/dxdy+D2d^2f/dy^2
+% 0=(-lX+a)df/dx+(-ly-a)df/dy+D1d^2f/dx^2-2Ddd^2f/dxdy+D2d^2f/dy^2
 if nargin==2 
     d=.5;
     Ux=5;

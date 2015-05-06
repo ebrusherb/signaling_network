@@ -79,6 +79,12 @@ Adrian Jacques~De Froment.
   the emergence of social hierarchy}.
 \newblock PhD thesis, Princeton University, 2010.
 
+\bibitem{Gardiner:2009fk}
+Crispin Gardiner.
+\newblock {\em Stochastic Methods: A Handbook for the Natural and Social
+  Sciences}.
+\newblock Springer-Verlag Berlin Heidelberg, 2009.
+
 \bibitem{Gillespie:1992vn}
 Daniel~T. Gillespie.
 \newblock A rigorous derivation of the chemical master equation.
@@ -99,6 +105,13 @@ Daniel~T. Gillespie.
 Daniel~T. Gillespie.
 \newblock Stochastic simulation of chemical kinetics.
 \newblock {\em Annual Review of Physical Chemistry}, 58:35--55, October 2007.
+
+\bibitem{Hausfater:1981fk}
+Glenn Hausfater, Carol~D. Saunders, and Michael Chapman.
+\newblock {\em Natural selection and social behavior}, chapter Some
+  applications of computer models to the study of primate mating and social
+  systems, pages 345--360.
+\newblock Chiron Press, New York, 1981.
 
 \bibitem{Hemelrijk:2011fk}
 Charlotte~K. Hemelrijk.
@@ -126,5 +139,18 @@ Signe Preuschoft.
 \newblock In Bernard Thierry, Mewa Singh, and Werner Kaumanns, editors, {\em
   Macaque Societies: A Model for the Study of Social Organization}, pages
   56--60. Cambridge University Press, 2004.
+
+\bibitem{Thierry:2000ij}
+Bernard Thierry.
+\newblock Covariation of conflict management patterns across macaque species.
+\newblock In Filippo Aureli and Frans B.~M. de~Waal, editors, {\em Natural
+  Conflict Resolution}, chapter~6, pages 106--128. University of California
+  Press, Ltd., 2000.
+
+\bibitem{Zhang:2004fk}
+Hui Zhang, Ashish Goel, Ramesh Govindan, Kahn Mason, and Benjamin~Van Roy.
+\newblock {\em Algorithms and Models for the Web-Graph}, chapter Making
+  eigenvector-based reputation systems robust to collusion, pages 92--104.
+\newblock Springer Berlin Heidelberg, 2004.
 
 \end{thebibliography}

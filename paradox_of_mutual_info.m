@@ -43,7 +43,7 @@ for c=1:its
         c3=cvals(ic,3);
         
 
-        perf=zeros(2,Nd,Nt,Nt); %individual, leak, dominance, thresholds
+        perf=zeros(2,Nd,Nt,Nt); %individual, dominance, thresholds
 
         perf(1,2:Nd,:,:)=c1*(1-twomat(l,2:Nd,:,:,1))+c2*(twomat(l,2:Nd,:,:,2))+c3*(1-twomat(l,2:Nd,:,:,1));
         perf(2,2:Nd,:,:)=c1*(1-twomat(l,2:Nd,:,:,1))+c2*(twomat(l,2:Nd,:,:,2))+c3*(twomat(l,2:Nd,:,:,1));

@@ -182,9 +182,22 @@ for c=1:its
     
     for t=1:(Ntime-1)
         timematnow=zeros(N,N);
+        
         timematnow(timemat<=timevec(t))=1;
+        numsigsnow=zeros(N,N);
+        for i=1:N
+            for j=[1:(i-1),(i+1):N]
+                if timemat(i,j)<=timevec(t)
+                    numsigsnow(i,j)=(timevec(t)-timemat(i,j))/(max(max(timemat))+1-timemat(i,j))*sigmat(i,j); %linear growth of signals
+                end
+            end
+        end
+%         numsigsnow=timematnow;
+        
         binsigmatnow=binsigmat.*timematnow;
-        sigmatnow=sigmat.*timematnow;
+        
+        sigmatnow=binsigmatnow.*numsigsnow;
+        
         [powervecDnow,powervecRnow,powervecDeltanow,powervecHnow,powervecPinow,powervecCnow] = powerfuns(binsigmatnow,sigmatnow);
         powervec=powervecDnow;
     %     powerdiff=ceil(max(powervec))-floor(min(powervec))+.1;

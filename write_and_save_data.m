@@ -20,8 +20,8 @@ Nt1=length(threshvals1);
 indices1=1:Nt1;
 
 
-% filename=strcat('variables','.mat');
-% save(filename,'Nl','Nd','Nt','lvals','domvals','threshvals');
+filename=strcat('variables','.mat');
+save(filename,'Nl','Nd','Nt','Nt1','lvals','domvals','threshvals','threshvals1','deltax2','deltax1');
 
 
 twomat=zeros(Nl,Nd,Nt,Nt,2); %leak, dominance, thresholds, prob, time

@@ -1,0 +1,207 @@
+\documentclass{article}
+\usepackage{latexsym}
+\usepackage{amssymb,amsmath,amsfonts}
+\usepackage{custom2}
+\usepackage{graphicx} 
+\usepackage{epstopdf} 
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage[all,arc]{xy}
+\usepackage{enumerate}
+\usepackage{mathrsfs}
+\usepackage{booktabs}
+\usepackage[pdftex]{hyperref}
+\usepackage{lscape}
+\usepackage{xcolor}
+\usepackage{natbib}
+
+\captionsetup{justification=RaggedRight, singlelinecheck=false}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\newcommand{\argmax}{\text{argmax}}
+\newcommand{\Tr}{\text{Tr}}
+\newtheorem{ass}{Assumption}
+
+\addtolength{\evensidemargin}{-.5in}
+\addtolength{\oddsidemargin}{-.5in}
+\addtolength{\textwidth}{1.4in}
+\addtolength{\textheight}{1.4in}
+\addtolength{\topmargin}{-.5in}
+
+\pagestyle{empty}
+
+\title{Conflict and Strategy in Collective Computation}
+\author{Eleanor Brush, David Krakauer, Jessica Flack}
+
+\begin{document}
+\maketitle
+
+\section*{Abstract}
+Function in biological systems emerges from the behavior of tens (e.g. animal social groups) to millions of components (e.g. neural systems), which use imperfect information and have only partially-aligned interests. Components make behavioral decisions in pair-wise interactions. The combined decisions produce system output. The roles of noise and error in collective computation are poorly understood. The leaky-integrator model (LIM) has been used to study neural pair-wise decision-making. Here we modify LIM to study pair-wise decision-making under conflict and error in animal social systems. We extend LIM to study the collective dynamics generating a group level output. Our model system is a macaque society. The decision at the pair-wise level is whether to emit a subordination signal. The output of the collective computation is the distribution of social power (DSP). We study how properties (weighting time, accuracy) of the decision to signal are influenced by signaling conflicts due to variation in strength of the stimulus input (here, asymmetry in fighting ability), and how these decision-level properties impact output properties. We find conflicts in the decision process strongly affect individuals for whom [the average strength of stimulus input] is large by incentivizing accurate signaling. When pairwise decisions are accurate local properties of the decision network are informative about individual state (here, fighting ability). Global properties become informative as accuracy declines, indicating that collective computation becomes nontrivial under error. DSP shape can be controlled by changing the weighting time to decision. The successful use of the LIM in the neural and social contexts suggests general principles of collective computation due to decision-making tradeoffs common across substrates and scales.
+
+\section*{Keywords }
+collective computation, noisy learning, leaky integrator, decisions, social network, consensus, power
+
+\section*{Introduction} 
+
+In many biological systems, functional patterns emerge from the interactions of components making decisions under uncertainty. This includes the decision-making behavior of an animal emerging from the firing decisions of billions of neurons, social structures like the distribution of power arising from the status-signaling decisions in chimpanzee and some macaque social groups, the collective motion of fish schools emerging from the velocity and alignment decisions of individual fish, and the toxins produced by quorum sensing bacteria once the bacteria have aggregated at sufficient density (Table \ref{examples}). In each of these examples the components make decisions based on accumulating information extracted from noisy environments. Their joint behavior produces an aggregate-level pattern with fitness consequences for the components and the collective. This two part process, which has now been described in a number of systems, constitutes a collective computation.
+
+An open question is how components should choose their decision-making strategies when there are conflicts of interest between components, perceptual errors, and noisy inputs, in order to collectively compute outputs with positive payoffs. This requires understanding (1) how the strength of the  conflicts of interest and the importance given to properties of a decision, including waiting time and decision accuracy, determine what strategies should be used, (2) how these decision-making strategies impact the collective computation, and (3) how the decisions of the components combine to produce the computation. 
+
+A variety of models, including the sequential probability ratio test (SPRT) and the leaky-integrator model (LIM), have been developed to study how components choose among alternatives in a noisy environment, for example, the firing decisions of neurons during a motion dot coherence task. Both the SPRT and the LIM track the amount of evidence supporting alternative choices. The LIM has the advantage over the SPRT of allowing for memory loss but application of the LIM to explain, for example, neural firing, has been largely phenomenological. Here we develop a LIM by deriving stochastic differential equations that mechanistically specify how information is accumulated by components and used in decision-making. We then extent the LIM in two ways: we introduce a game-theoretic component and we study the network of interactions generated by our stochastic model to explore how decisions combine to produce the output and how the output is influenced by the components' strategies. We use published empirical and computational results from work on collective computation in a well-studied model system to justify the form of our equations. The model system is a captive macaque society (\emph{Macaca nemestrina}, n=48, see Appendix Sec. \ref{empirical}) that is characterized by 
+%the \emph{minimum degree of relevant complexity}: 
+social learning at the individual level, social structures that arise from nonlinear processes and feedback to influence individual behavior, frequent non-kin interactions and multiplayer conflict interactions 
+(Appendix, Sec.\ref{XX})\cite {Flack:2007ir, Flack:2006jh, Flack:2006vi, Flack:2005ih, Flack:2005dg, Thierry:2004tj}. 
+
+\section*{Model} 
+\subsection*{Model System }
+\ In our model system the decision is whether one individual in a pair should emit a silent-bared teeth display signaling agreement to the subordinate role in the relationship. The decision depends on the perceived magnitude of agonistic asymmetry by the weaker animal. If the asymmetry is perceived large, the cost of subordination is smaller than the cost of continued aggression. Encoded in the directed network of subordination signaling decisions is the output of the collective computation--the distribution of social power (DSP). Social power is operationalized as the degree of agreement in the group that an individual is capable of successfully using force during fights. The DSP is known in this system to effect interaction and conflict management cost with, for example, heavy-tailed distributions making otherwise costly conflict management strategies like policing accessible at least to individuals who sit in the tail. The DSP is obtained by quantifying consensus in the network about a node's capacity to use force successfully. Consensus can be measured using several algorithms that return consensus scores for each individual. These algorithms can be viewed as alternative hypotheses for how power is computed in the system (Sec.\ref{computation}. We study how properties (weighting time, accuracy) of the decision to signal are influenced by signaling conflicts due to variation in strength of the stimulus input (here, asymmetry in fighting ability), and how these decision-level properties impact the shape of the DSP. 
+
+\subsection*{Stochastic differential equations }    
+\ In chemical systems, stochastic differential equations are used to describe the dynamics of the concentrations of various solutes, and these Langevin equations can be derived from a mechanistic description of chemical reactions \cite{Gillespie:1992vn,Gillespie:2000fk}. In the decision-making literature the SDEs used to model noisy decision processes are usually formulated without any mechanistic justification. By following the mathematical derivation of the SDEs in chemical systems given by Gillespie \cite{Gillespie:2000fk},  we can derive the SDEs used in the leaky integrator model.
+
+In a decision between two alternatives, there are two decision variables, $X_1$ and $X_2$, each indicating the evidence accumulated for one of the options. In the absence of input, the decision variables leak back towards $0$ with rate $\ell$.  (A table of all variables used in the text is given in Table \ref{variables}.)  If there is no input then over a period length $\tau$ a decision variable decreases as $X(t+\tau)=(1-\ell\tau)X(t)$. If there is input, each decision variable will incorporate the new evidence by responding positively to one type of input and negatively to the other.  In the case of our model system, the input is the accumulating history of fights won and lost. 
+
+$X_1$ increases by an amount $b$ when it sees evidence for option $1$ and decrements by $-b$ when it sees evidence for option $2$, and conversely for $X_2$.  In the neural case, one neural population responds positively to left dots and negatively to right dots and the other neural population does the opposite.  In the social case, one animal's estimate of its own fighting ability increases when it wins fights and decreases when it loses fights, and the other animal's estimate does the opposite.  [ELEANOR- SHOULD DO WINS AND LOSSES NOT DOTS] For clarity, in the following we will refer to the inputs as left or right dots, but they could also be referred to as wins or losses]. To calculate the variables at time $t+\tau$, we  count how many times each of type of input occurred in the time since $t$ and add the changes resulting from these events to the background leaky estimate (as in \cite{Gillespie:2000fk}):
+\begin{align*}
+X_1(t+\tau)&=(1-\ell\tau)X_1(t)+b\times\# \text{ of left dots in }[t,t+\tau)-b\times\# \text{ of right dots in }[t,t+\tau)
+\\ X_2(t+\tau)&=(1-\ell\tau)X_2(t)-b\times\# \text{ of left dots in }[t,t+\tau)+b\times\# \text{ of right dots in }[t,t+\tau). 
+\end{align*}
+
+Our first assumption is that the rates at which the two types of inputs occur is constant over time.  We can thus describe the number of each type of event with a Poisson random variable, $N_\text{L}$ and $N_\text{R}$, giving 
+\begin{align*}
+X_1(t+\tau)&=(1-\ell\tau)X_1(t)+bN_\text{L}-bN_\text{R}
+\\ X_1(t+\tau)&=(1-\ell\tau)X_2(t)-bN_\text{L}+bN_\text{R}.
+\end{align*}
+If events happen at a rate $r$ and the event is a left dot with probability $c$ and a right dot with probability $1-c$, then the expectation of $N_L$ and $N_R$ in a period of length $\tau$ are, respectively, $\tau r c$ and $\tau r(1-c)$. In the neural case, $c$ is related to the ``coherence'' of the visual stimulus.  A value of $c$ close to $0$ or $1$ means that most of the events are of one type or the other and the decision is easier to make than when $c$ is close to $.5$.
+
+If enough events happen in the period of time from $t$ to $t+\tau$ then we can approximate the Poisson random variables with normal random variables with mean and variance equal to the mean of the Poisson random variables.  Our second assumption, then, is that the period of time of length $\tau$ is long enough to make this approximation. Let $Z_\text{L}$ and $Z_\text{R}$, be independent standard Normal random variables, i.e. with mean $0$ and standard deviation $1$, giving
+\begin{align*}
+X_1(t+\tau)&=(1-\ell\tau)X_1(t)+b\bigg(\tau rc+\sqrt{\tau rc}Z_{\text{L}}\bigg)-b\bigg(\tau r(1-c)+\sqrt{\tau r(1-c)}Z_{\text{R}}\bigg)
+\\X_2(t+\tau)&=(1-\ell\tau)X_2(t)-b\bigg(\tau rc+\sqrt{\tau rc}Z_{\text{L}}\bigg)+b\bigg(\tau r(1-c)+\sqrt{\tau r(1-c)}Z_{\text{R}}\bigg).
+\end{align*}
+Finally, as we make the period of time shorter and shorter, making $\tau$ infinitesimally small, these equations become stochastic differential equations,
+\begin{equation}
+\begin{array}{ll}
+dX_1&=\bigg(-\ell X_1(t)+br(2c-1)\bigg)dt+\bigg(b\sqrt{rc}\bigg)dW_\text{L}t-\bigg(b\sqrt{r(1-c)}\bigg)dW_\text{R}t
+\\dX_2&=\bigg(-\ell X_2(t)-br(2c-1)\bigg)dt-\bigg(b\sqrt{rc}\bigg)dW_\text{L}t+\bigg(b\sqrt{r(1-c)}\bigg)dW_\text{R}t
+\end{array}
+\end{equation}
+w here $dW_{\text{L}}$ and $dW_{\text{R}}$ are independent Brownian motions representing, respectively, the left and right inputs.  The assumptions about the timescales on which inputs occur are reasonable in the social system, and the successful application of this type of model to neural populations implies they are not unreasonable in that system.  In Table \ref{variables}, we list the inputs, outputs, and variables of the decision model and how they should be interpreted in the neural and social systems.
+
+\subsection*{Reaching a decision }
+\ There are two ways to use the decision variables $X_1$ and $X_2$ to make a decision.  If the difference in the variables can be observed, it indicates the relative strengths of the evidence for each option. If $Y=X_1-X_2$, the system should decides on $X_1$ when $Y$ is large and positive and on $X_2$ when $Y$ is large and negative.  Specifically, there are two thresholds, $T_1$ and $T_2$ such that if $Y>T_1$ the decision is for $X_1$ and if $Y<-T_2$ the decision is for $X_2$.  However, it may be the case that the difference in the variables cannot be observed.  In this case, the decision depends on whether $X_1$ or $X_2$ hits a threshold first.  Again, there are two thresholds, $T_1$ and $T_2$, and if $X_2<-T_2$ the decision is for $X_1$ and if the $X_1<-T_1$ the decision is for $X_2$. 
+
+For neural systems, the two stochastic equations describing the activity of the two neural populations integrating environmental evidence are often reduced to the one-dimensional equation describing the difference in the activity levels \cite{Brown:2005fk,Bogacz:2006uq,Feng:2009kl}. The reduced model is easier to analyze but it assumes a neural mechanism for calculating the difference in activity rates and there is no empirical basis for this. In social systems like our model system, the one dimensional simplification implies a third party evaluating the difference in the opinions of the two animals rather than allowing for the animals to decide themselves based on their accumulating history--a decision, i.e. the emission of a signal from one of the two animals, is only reached when one of the two animals' opinions goes below its threshold. Our social system (and probably the neural system as well) is therefore inherently two-dimensional and so our model is formulated this way.  In Table \ref{differences}, we compare properties of the decision process in both systems.
+
+\subsection*{Utility of decision }
+\ The thresholds affect how long the decision takes and the probabilities of a given decision.  A ``good'' decision is one that reaches the correct output quickly, i.e.\ the expected time until a decision is reached (decision time, DT) and the probability that an incorrect decision is made (error rate, ER) are low.  However, it is impossible to minimize both simultaneously as waiting longer and accumulating more evidence makes the decision more accurate.  We also allow for individuals to have preferences for the decisions independent of correctness.  In the social case, for example, the weaker individual may agree to signal because it has perceived a large asymmetry but its preference may be to be the dominant individual and not to signal. In the neural case, different neural populations may receive different rewards if the decision reaches different outcomes, regardless of which of the alternatives is correct. Allowing for decision preference introducing a mechanism for maximizing the probability that the preferred outcome is reached (probability of preference being chosen, $\text{PP}_i$) and captures the extent to which the weaker animal perceives the subordination contract to be less costly than continued fighting.  ELEANOR I THINK DECISION PREFERENCE SOUNDS BETTER THAN PERSONAL PREFERENCE. WE COULD CHANGE PP TO DP.
+
+To describe the tradeoffs between error rate, decision time, and preference, we quantify the utility of the decision process by introducing three weights, $w_1$, $w_2$, and $w_3$ such that $w_1+w_2+w_3=1$.  These weights describe how the three quantities are prioritized.  For individual $i$, we define
+\begin{equation*}
+U_{i}=w_1\text{ER}+w_2\text{DT}+w_3(1-\text{PP}_i).
+\end{equation*}
+The decision is better if $U_i$ is lower.  In the social system, $w_2$ can be interpreted as the cost of fighting since when $w_2$ is higher, the time spent fighting until a decision is reached is more costly.  In the neural system, $w_2$ depends on whatever costs the brain or the whole animal incurs by waiting for a decision. Given that $\text{PP}_1=1-\text{PP}_2$, it is impossible for them both to maximize $\text{PP}_i$, so decision preference weight $w_3$ indicates the strength of the conflict of interests between individuals and how stubborn the individuals are about their preferences. In the social system, $w_3$ can be interpreted as the benefit from being the dominant animal in a pair.
+
+We show in the Appendix (Sec.\ref{X}) each of the three decision properties, ER, DT, and DP satisfies a partial differential equation that depends on the SDEs and the parameters of the model. There are analytical solutions to these equations when the system of SDEs is reduced to one dimension. However, we were not able to find an analytical solution for the full two-dimensional system and we therefore used numerical methods to solve the PDEs in this case.
+
+\subsection*{Nash equilibrium thresholds }
+\ In a group of individuals, each with a value $a_i$, the difficulty with which the pair $i,j$ makes a decision increases with the difference in value, i.e. $c_{ij}$ is an increasing function of $|a_i-a_j|$. In the social system, the value $a_i$ reflects an animal's fighting ability. In the neural system, the value $a_i$ is high if the property (e.g.\ left movement or red color) a neural population responds to is abundant in the visual stimulus. We assume each individual has the same decision threshold for all the decisions processes with each of its peers and, given those thresholds, each individual $i$ has a utility $U_{ij}$ from its decision process with individual $j$ and a total utility given by the average of these, $\langle U_{ij}\rangle _j$. For each set of values $\{a_1,\dots,a_N\}$, we find the Nash equilibrium thresholds such that no individual has an incentive to choose another threshold to improve its utility.  Since the Nash thresholds depend on the values $\{a_1,\dots,a_N\}$,  we repeatedly draw a set of values from a uniform distribution and find the Nash thresholds for each set. Then we find the average Nash threshold as a function of an animal's rank in the set of fighting abilities.    
+
+\subsection*{Collective computation }
+\label{computation}
+\ The decision to signal and the decision to fire can be viewed as opinions. The decider neuron fires or not in response to some input by an upstream neuron. This decision can be viewed as the opinion of the decider node about the `value' of the upstream neuron. In the subordination signal case, the opinion of the sender is that the receiver is capable of using force. Encoded in these directed decision networks is the collective opinion or degree of consensus in the group about the value of a given node. In the social case--the degree of consensus about the ability to use force successfully gives a node's social power \cite{Brush:2013fk, Flack:2006uq}.
+
+There are a number of algorithms that can be used to compute how much agreement there is in the decision network about the value of a component. These algorithms compute a consensus score for each node in the network. In the case of our model system, the distribution of these scores gives the distribution of power (Sec.refX) and the integration over the opinions via the algorithm is the collective computation. 
+
+Here we ask which consensus algorithm best captures the collective computation in our model system. We use the algorithms to compute a DSP from the decision network generated by our stochastic model. We ask which model generated DSP is most informative about the underlying distribution of fighting abilities assumed in the model--this is how we assess which algorithm best describes how information in the network is integrated to produce the collective computation (Appendix, Sec.\ref{X}). 
+
+The simplest algorithm is the unweighted in-degree of a node, i.e. the number of individuals deciding in favor of each individual.  The second algorithm we consider is the weighted in-degree of a node, which is a finer measure than the unweighted in-degree since it takes into consideration the strength of each decision made in favor of the node.  The third is the entropy of the distribution of the number of decisions made in favor of each individual, which gives a coarse measurement of how uniformly all other individuals in the group behave with respect to a focal individual.  The fourth is the eigenvector centrality of the decision network, which measures how central each node is in the global structure of the network.  For more details see \cite{Brush:2013fk}. Using many random sets of fighting abilities, we find the mutual information between the consensus scores from the network at each time $t$ and the true values, for each consensus formalism. We also find the average skewness of the set of consensus scores.
+
+\ For each set of values $\{a_1,\dots,a_N\}$ and Nash thresholds $\{T_1,\dots,T_N\}$, we find the probability that each pair will reach either outcome and the expected time it will take.  We use these probabilities to generate a set of decisions between all pairs.  We use the convention that a decision is sent from $i$ to $j$ if $j$'s preference prevailed.  To incorporate the time it takes for a decision to be reached and allow for multiple decisions to be made, at each point in time $t$, we define the weight of the edge from $i$ to $j$ to be
+$$
+\begin{array}{lllll}
+0 & \text{ if the decision was made in favor of } i\text{ or } DT_{ij}>t 
+\\t-DT_{ij} & \text{ if the decision was made in favor of } j\text{ and } DT_{ij}>t 
+\end{array}
+$$
+Once $t$ is greater than the maximum decision time between all pairs of individuals, all edges of the network will have formed.
+
+\section*{Results }
+\ We confirm that decision-making is accurate under the two dimensional model (Appendix, Sec.\ref{onevstwoD}).
+
+\subsection*{The decision to signal }
+\subsubsection*{Conflicts of interest}
+\ We start with a pair of individuals, i.e. a group of size two, to build intuition for how the optimization weights affect the Nash equilibrium thresholds.  If accuracy of the decision is important ($w_1=1$), the weaker individual will set his threshold as low as possible and the stronger animal will set his threshold as high as possible. When only personal preference matters and there is a strong conflict of interest between the individuals($w_3=1)$, both will set their threshold high since there is no incentive for the individuals to stop accumulating evidence. As the importance of decision time increases (i.e. waiting costs increase), both individuals will lower their thresholds in order to reach the decision more quickly, whatever that decision may be (Figure \ref{nasheq}). The accuracy with which a pair using Nash thresholds can reach a decision is highest when only error rate matters ($w_1=1$) and decreases as either decision time or personal preference become important (Figure \ref{nasheq}).  
+
+ELEANOR: I FEEL MOST OF THE NEXT TWO PARAGRAPHS SHOULD GO IN THE APPENDIX. CAN YOU REDUCE TO THREE-FOUR SENTENCES FOR THE PAPER? In a group with more than two individuals, an individual's position in the group affects how it makes the tradeoff between error rate, preference and decision time. Prioritizing accuracy tends to lead strong fighters to set high thresholds and weak fighters to set low thresholds. Prioritizing decision preference tends to lead all individuals to set high thresholds (Figure \ref{groupeq}). As one might expect, weak individuals set different thresholds depending on whether accuracy is important or decision preference is important, with low thresholds set when accuracy is prioritized. Strong fighters set high thresholds in either case. This is because choosing a higher threshold increases waiting time in decisions with respect to all individuals, decreases the accuracy of its decisions with respect to stronger animals, and only slightly increases the accuracy of the decisions with respect to other weak individuals. In other words, weak individuals sacrifice accuracy in their decisions with respect to each other in order to decrease overall decision times. This leads to the counterintuitive result that when decision preference is important and by definition accuracy less important, average decision accuracy actually increases for weak pairs.
+
+This in turn leads to a very slight increase in the average accuracy of all pairs in the group (Figure \ref{groupeq}). In summary in a group with more than two members, increasing the importance of decision time decreases the average accuracy, but increasing the strength of conflicts of interest leads to a (slight) increase in accuracy. While the improvement is small, it is very different from the decrease in accuracy caused by increasing the strength of conflicts of interest in a pair. 
+
+\subsubsection*{Waiting time }
+\ When waiting costs are low, the pairs that take the longest to reach a decision are those with similar fighting abilities, but pairs with different abilities also take a fairly long time.  When waiting costs are high, all pairs reach decisions quickly.  At intermediate costs, most pairs can reach a decision quite quickly, except those who have similar and high abilities (Figure \ref{groupeq}).  Pairs with similar and high abilities always take as long or longer to make a decision than any other pairs do.
+
+\subsection*{Collective computation of DSP }
+\subsubsection*{Algorithms }
+E: LETS MAKE A LITTLE MORE CONCISE, MOVE SOME DETAIL TO APPENDIX
+\ When waiting costs are low, the ``finer'' consensus algorithms--- weighted in-degree and eigenvector centrality---outperform the ``coarser'' algorithms--in-degree and entropy---because in these circumstances, the edges of the decision network tend to be accurate and the finer measures make use of more information in the network. When there are no waiting costs and decision preference is important, all individuals have high thresholds and weighted in-degree outperforms eigenvector centrality (Figure \ref{bestmetric}).  
+
+When the pairwise decisions are less accurate, global structure of the decision network provides information about values that the individual relationships do not, so eigenvector centrality is the the most informative about the individuals' true values (Figure \ref{bestmetric}).  When accuracy is quite low, weighted in-degree and eigenvector centrality correctly rank the very strongest individuals but cannot distinguish among the weakest individuals. On the other hand, in-degree assigns the very strongest individuals the same scores but correctly resolves the differences between the weakest individuals, making it slightly more informative over all. When accuracy is very low, none of the measures are very informative but entropy correctly gives the weakest individuals low scores and the very strongest individuals high scores, giving it an edge over the other measures.
+
+The information content of the different formalisms show different patterns as the network is forming (Figure \ref{bestmetric}). The information content of all formalisms show an initial rise as edges start to form in the decision network. When there are waiting costs and hence some inaccurate edges in the network there is a decrease in the information content of the three local measures---weighted in-degree, in-degree, and entropy---but not in eigenvector centrality. As the network becomes more fully developed, the information content of the three local measures recovers, in some cases even surpassing the information content of eigenvector centrality. Therefore, regardless of which measure is most informative on a fully developed network, as long as there are non-zero waiting costs, eigenvector centrality has the advantage of never losing information content as edges are added to the network and consistently performing well on networks that are not fully formed. We also find that for each consensus algorithm mutual information between the DSP and the underlying distribution of fighting ability increases with average pairwise accuracy. Hence the information content of the consensus scores is maintained when decision preference is prioritized over error rate. 
+
+\subsubsection*{Aggregate-level output properties as a function of pair-wise decision properties. }
+MORE CONCISE?
+\ Properties of the DSP like skewness effect the accessibility of conflict management strategies like policing. Hence an important question is how these properties can be tuned or controlled. For each measure of consensus in the decision network we find the average skewness of the distribution of consensus scores of a group using Nash thresholds, as they depend on optimization weight. We find that, for all measures, skewness is maximized at intermediate waiting costs and does not depend strongly on the tradeoff between error rate and preference (Figure \ref{skewness}). (Results for number of signalers are shown in Figure \ref{skewness} and others are similar).  When waiting costs are low and accuracy is high, the decisions accurately represent the individuals' true  abilities, so the distribution of number of signalers accurately represents the distribution of abilities, which is not very right-skewed.  When waiting costs are high and accuracy is low, decisions are so noisy that all individuals receive a similar number of decisions, giving a distribution that is quite uniform and not right-skewed.  At intermediate waiting costs, the decisions between individuals with low to middle abilities are very noisy, so that the individuals in the bottom and middle of the group receive a similar number of signals, but all individuals make accurate decisions with the top few individuals, which gives them high scores and results in a right-skewed distribution.
+
+\section*{Discussion}
+ELEANOR: We have ~9000 characters with spaces left for the discussion. Why don't you take the first stab at condensing and making a bit more general what you wrote in the first draft. Try not to repeat the results. Some of the text in your draft can go in the appendix discussion. 
+
+\section*{Acknowledgements }
+This research was supported by a grant to the Santa Fe Institute from the John Templeton Foundation for the study of complexity and by ARO contract contract W911NF-13-1-0340. EB acknowledges support from NIH training grant 5T32HG003284. The authors thank Bryan Daniels, Chris Ellison, Philip Poon, and Eddie Lee for helpful discussion. 
+
+\pagebreak
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{signaling_model}
+
+\appendix
+\section*{Supplementary Information}
+\renewcommand{\thesubsection}{\Alph{subsection}.}
+
+\section*{Model system}
+\label{empirical}
+We may delete this section as I covered most of it in the main paper. I will see how it all looks next iteration.
+
+\section*{Model}
+\label{modeldetails}
+Additional details on the model to go here if necessary. Math issues? Relation to other models?
+
+\section*{Results}
+\subsection*{Decision to signal}
+\subsubsection*{Decision making is as accurate without a third party arbiter. }
+\label{onevstwoD}
+\ First we compare the decision process in the full two-dimensional system and in a reduced one-dimensional system to see whether decisions are made more accurately or quickly in one. To make the systems directly comparable, we assume symmetric thresholds, i.e. $T_1=T_2$.  We find that two-dimensional process is as accurate as the one-dimensional process--for a given expected time to decision, the two-dimensional process reaches the correct decision with the same probability (Supplemental Figure \ref{dimensionality}). We use the two-dimensional system in the rest of our analyses as it is  
+%Accuracy decreases as leak rates ($\ell$) become higher, but increases when the strength of the input ($c$) is higher.
+
+\subsubsection*{Conflicts of interests}
+Move some of paper results section here. Expand on nash issues here?
+
+\subsubsection*{Decision time}
+Move or expand on some of these results here. 
+
+\subsection*{Computation of output}
+\subsubsection*{Algorithms }
+Move some of paper results section here
+
+\subsubsection*{Testing the algorithms and notion of `correctness' }
+JESS HAS IDEAS FOR HOW TO WRITE THIS SECTION AND CAN FILL IN NEXT INTERATION
+
+\subsubsection*{Properties of output }
+Move some paper results here.
+
+\section*{Additional discussion}
+Some of the text in your first draft can go here, divided into subsections.
+\label{additionaldiscussion}
+
+\end{document}

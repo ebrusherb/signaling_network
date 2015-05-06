@@ -26,6 +26,7 @@ funstoplot=[1 2 4 6];
 colorperm=[1 2 4 3];
 numpowerfuns=length(powerfuns);
 load /Users/eleanorbrush/Dropbox/signaling_network/variables
+load /Users/eleanorbrush/Dropbox/signaling_network/optanalysis_output.mat
 %% coordinate set up
 N=20;
 its=1000;
@@ -207,7 +208,7 @@ set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[-w*.55 0 w*2 h]);
 
 filename=strcat('/Users/eleanorbrush/Desktop/','pairwise_accuracy','.pdf');
-print(filename,'-dpdf','-r300');
+% print(filename,'-dpdf','-r300');
 
 
 %% nasheq figure
@@ -276,7 +277,7 @@ set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[0 0 w h]);
 
 filename=strcat('/Users/eleanorbrush/Desktop/','nasheq_thresholds','.pdf');
-print(filename,'-dpdf','-r300');
+% print(filename,'-dpdf','-r300');
 
 
 %% group accuracy triangle heatmap figure
@@ -305,7 +306,7 @@ set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[0 0 w h]);
 
 filename=strcat('/Users/eleanorbrush/Desktop/','groupaccuracy','.pdf');
-print(filename,'-dpdf','-r300');
+% print(filename,'-dpdf','-r300');
 
 %% group eq thresholds figure
 figure
@@ -383,11 +384,11 @@ for I=1:toplot
         case 1
             ylim=get(gca,'Ylim');
             [x,y]=data2norm(0,ylim(2));
-            annotation('textbox',[x-.04 .95 .05 .04],'String',['(' alphabet(I) ')'],'FitBoxToText','on','FontSize',textfontsz,'FontName',fontname,'EdgeColor','none','VerticalAlignment','middle','HorizontalAlignment','left')
+            annotation('textbox',[x-.04 .95 .05 .04],'String',['(' alphabet(I+2) ')'],'FitBoxToText','on','FontSize',textfontsz,'FontName',fontname,'EdgeColor','none','VerticalAlignment','middle','HorizontalAlignment','left')
         case 0
             ylim=get(gca,'Ylim');
             [x,y]=data2norm(0,ylim(2));
-            annotation('textbox',[x-.04 .5 .05 .04],'String',['(' alphabet(I) ')'],'FitBoxToText','on','FontSize',textfontsz,'FontName',fontname,'EdgeColor','none','VerticalAlignment','middle','HorizontalAlignment','left')
+            annotation('textbox',[x-.04 .5 .05 .04],'String',['(' alphabet(I+2) ')'],'FitBoxToText','on','FontSize',textfontsz,'FontName',fontname,'EdgeColor','none','VerticalAlignment','middle','HorizontalAlignment','left')
     end
 end
 
@@ -395,7 +396,7 @@ set(gcf,'PaperSize',[w h]);
 set(gcf,'PaperPosition',[0 0 w h]);
 
 filename=strcat('/Users/eleanorbrush/Desktop/','groupeq_thresholds','.pdf');
-print(filename,'-dpdf','-r300');
+% print(filename,'-dpdf','-r300');
 
 
 %% mutual information triangle heatmap figure

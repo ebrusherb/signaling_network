@@ -79,6 +79,12 @@ Adrian Jacques~De Froment.
   the emergence of social hierarchy}.
 \newblock PhD thesis, Princeton University, 2010.
 
+\bibitem{Gardiner:2009fk}
+Crispin Gardiner.
+\newblock {\em Stochastic Methods: A Handbook for the Natural and Social
+  Sciences}.
+\newblock Springer-Verlag Berlin Heidelberg, 2009.
+
 \bibitem{Gillespie:1992vn}
 Daniel~T. Gillespie.
 \newblock A rigorous derivation of the chemical master equation.
@@ -140,5 +146,11 @@ Bernard Thierry.
 \newblock In Filippo Aureli and Frans B.~M. de~Waal, editors, {\em Natural
   Conflict Resolution}, chapter~6, pages 106--128. University of California
   Press, Ltd., 2000.
+
+\bibitem{Zhang:2004fk}
+Hui Zhang, Ashish Goel, Ramesh Govindan, Kahn Mason, and Benjamin~Van Roy.
+\newblock {\em Algorithms and Models for the Web-Graph}, chapter Making
+  eigenvector-based reputation systems robust to collusion, pages 92--104.
+\newblock Springer Berlin Heidelberg, 2004.
 
 \end{thebibliography}
